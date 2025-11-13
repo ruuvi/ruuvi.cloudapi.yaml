@@ -1,0 +1,40 @@
+name: Publish OpenAPI to GitBook
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      # Required secret
+      GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+      # Prefer repo/org variables; fallback to inline strings if you like
+      GITBOOK_SPEC_NAME: ${{ vars.GITBOOK_SPEC_NAME }}
+      GITBOOK_ORGANIZATION_ID: ${{ vars.GITBOOK_ORGANIZATION_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bundle OpenAPI (User API)
+        run: |
+          mkdir -p userapi
+          npx -y @redocly/cli@latest bundle \
+            userapi/openapi.yaml \
+            -o userapi/bundle.yaml
+
+      - name: Upload bundled spec as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: userapi-openapi-bundle
+          path: userapi/bundle.yaml
+
+      - name: Publish spec file to GitBook
+        run: |
+          npx -y @gitbook/cli@latest openapi publish \
+            --spec "$GITBOOK_SPEC_NAME" \
+            --organization "$GITBOOK_ORGANIZATION_ID" \
+            userapi/bundle.yaml
