@@ -32,11 +32,20 @@ jobs:
           # Read and JSON-escape the OpenAPI file
           CONTENT=$(jq -Rs . < userapi/bundle.yaml)
 
-          curl -sS -X PUT \
+          curl --fail-with-body --show-error -s \
+            -X PUT \
             "https://api.getpostman.com/apis/${POSTMAN_API_ID}/schemas/${POSTMAN_SCHEMA_ID}/files/${POSTMAN_SCHEMA_FILE}" \
             -H "X-Api-Key: ${POSTMAN_API_KEY}" \
             -H "Accept: application/vnd.api.v10+json" \
             -H "Content-Type: application/json" \
             -d "{\"content\": ${CONTENT}}"
+
+      - name: Sync collection with API schema
+        run: |
+          curl --fail-with-body --show-error -s \
+            -X PUT \
+            "https://api.getpostman.com/apis/${POSTMAN_API_ID}/collections/${POSTMAN_COLLECTION_UID}/sync-with-schema-tasks" \
+            -H "X-Api-Key: ${POSTMAN_API_KEY}" \
+            -H "Accept: application/vnd.api.v10+json"
 
     
