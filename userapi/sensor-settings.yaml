@@ -141,7 +141,7 @@ get:
   summary: Get settings for sensor
   operationId: getSensorSetting
   tags:
-    - Sensor Settings
+    - Sensor-Settings
   security:
     - bearerAuth: []
   description: >
