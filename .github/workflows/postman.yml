@@ -1,0 +1,59 @@
+name: Publish API to Postman and run tests
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  postman:
+    runs-on: ubuntu-latest
+
+    env:
+      POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+      POSTMAN_API_ID: ${{ vars.POSTMAN_API_ID }}
+      POSTMAN_SCHEMA_ID: ${{ vars.POSTMAN_SCHEMA_ID }}
+      OPENAPI_FILE: userapi/bundle.yaml
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bundle OpenAPI (User API)
+        run: |
+          mkdir -p userapi
+          npx -y @redocly/cli@latest bundle \
+            userapi/openapi.yaml \
+            -o userapi/bundle.yaml
+
+      # Update Postman API schema from OpenAPI
+      - name: Update Postman API schema
+        run: |
+          echo "Updating Postman API ${POSTMAN_API_ID} from ${OPENAPI_FILE}"
+
+          # Postman API: Update a schema (v10)
+          curl -sS -X PUT "https://api.getpostman.com/apis/${POSTMAN_API_ID}/schemas/${POSTMAN_SCHEMA_ID}" \
+            -H "X-Api-Key: ${POSTMAN_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @- <<EOF
+          {
+            "schema": {
+              "type": "openapi3",
+              "language": "yaml",
+              "schema": $(jq -Rs . < "${OPENAPI_FILE}")
+            }
+          }
+          EOF
+
+      # Trigger monitor run (integration tests in Postman)
+      - name: Run Postman Monitor
+        if: vars.POSTMAN_MONITOR_ID != ''
+        run: |
+          echo "Triggering monitor run for monitor ${POSTMAN_MONITOR_ID}"
+          
+          MONITOR_RUN=$(curl -sS -X POST \
+            "https://api.getpostman.com/monitors/${{ vars.POSTMAN_MONITOR_ID }}/run" \
+            -H "X-Api-Key: ${POSTMAN_API_KEY}")
+          
+          echo "Monitor run triggered: $MONITOR_RUN"
+    
