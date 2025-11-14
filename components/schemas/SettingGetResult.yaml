@@ -1,0 +1,8 @@
+type: object
+required:
+  - sensors
+properties:
+  sensors:
+    type: array
+    items:
+      $ref: './Settings.yaml'

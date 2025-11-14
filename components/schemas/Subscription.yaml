@@ -1,0 +1,73 @@
+type: object
+required:
+  - subscriptionName
+  - maxClaims
+  - maxShares
+  - maxSharesPerSensor
+  - maxHistoryDays
+  - maxResolutionMinutes
+  - emailAlertAllowed
+  - pushAlertAllowed
+  - telegramAlertAllowed
+  - delayedAlertAllowed
+  - pdfExportAllowed
+  - offlineAlertAllowed
+  - isActive
+  - endAt
+properties:
+  subscriptionName:
+    type: string
+    example: Business Standard
+
+  maxClaims:
+    type: integer
+    example: 50
+
+  maxShares:
+    type: integer
+    example: 80
+
+  maxSharesPerSensor:
+    type: integer
+    example: 10
+
+  maxHistoryDays:
+    type: integer
+    example: 1096
+
+  maxResolutionMinutes:
+    type: integer
+    example: 1
+
+  emailAlertAllowed:
+    type: boolean
+    example: true
+
+  pushAlertAllowed:
+    type: boolean
+    example: true
+
+  telegramAlertAllowed:
+    type: boolean
+    example: true
+
+  delayedAlertAllowed:
+    type: boolean
+    example: true
+
+  pdfExportAllowed:
+    type: boolean
+    example: true
+
+  offlineAlertAllowed:
+    type: boolean
+    example: true
+
+  isActive:
+    type: boolean
+    example: true
+
+  endAt:
+    type: string
+    format: date-time
+    example: 2026-07-24T10:35:42.000Z
