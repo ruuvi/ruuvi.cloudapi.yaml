@@ -14,7 +14,7 @@ jobs:
       POSTMAN_SCHEMA_FILE: ${{ vars.POSTMAN_SCHEMA_FILE }}
       POSTMAN_API_VERSION_ID: ${{ vars.POSTMAN_API_VERSION_ID }}
       POSTMAN_COLLECTION_UID: ${{ vars.POSTMAN_COLLECTION_UID }}
-      POSTMAN_MONITORS: ${{ vars.POSTMAN_MONITORS }
+      POSTMAN_MONITORS: ${{ vars.POSTMAN_MONITORS }}
 
     steps:
       - name: Checkout
