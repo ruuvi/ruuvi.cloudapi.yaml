@@ -7,6 +7,6 @@ allOf:
       - settings
     properties:
       subscription:
-        $ref: './SubscriptionResult.yaml'
+        $ref: './Subscription.yaml'
       settings:
         $ref: './SettingObject.yaml'
