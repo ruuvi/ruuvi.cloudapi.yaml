@@ -1,8 +1,6 @@
 name: Publish API to Postman and run tests
 
 on:
-  push:
-    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
@@ -13,7 +11,10 @@ jobs:
       POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
       POSTMAN_API_ID: ${{ vars.POSTMAN_API_ID }}
       POSTMAN_SCHEMA_ID: ${{ vars.POSTMAN_SCHEMA_ID }}
-      OPENAPI_FILE: userapi/bundle.yaml
+      POSTMAN_SCHEMA_FILE: ${{ vars.POSTMAN_SCHEMA_FILE }}
+      POSTMAN_API_VERSION_ID: ${{ vars.POSTMAN_API_VERSION_ID }}
+      POSTMAN_COLLECTION_UID: ${{ vars.POSTMAN_COLLECTION_UID }}
+      POSTMAN_MONITORS: ${{ vars.POSTMAN_MONITORS }
 
     steps:
       - name: Checkout
@@ -26,34 +27,16 @@ jobs:
             userapi/openapi.yaml \
             -o userapi/bundle.yaml
 
-      # Update Postman API schema from OpenAPI
-      - name: Update Postman API schema
+      - name: Update Postman schema from OpenAPI file
         run: |
-          echo "Updating Postman API ${POSTMAN_API_ID} from ${OPENAPI_FILE}"
+          # Read and JSON-escape the OpenAPI file
+          CONTENT=$(jq -Rs . < userapi/bundle.yaml)
 
-          # Postman API: Update a schema (v10)
-          curl -sS -X PUT "https://api.getpostman.com/apis/${POSTMAN_API_ID}/schemas/${POSTMAN_SCHEMA_ID}" \
+          curl -sS -X PUT \
+            "https://api.getpostman.com/apis/${POSTMAN_API_ID}/schemas/${POSTMAN_SCHEMA_ID}/files/${POSTMAN_SCHEMA_FILE}" \
             -H "X-Api-Key: ${POSTMAN_API_KEY}" \
+            -H "Accept: application/vnd.api.v10+json" \
             -H "Content-Type: application/json" \
-            --data-binary @- <<EOF
-          {
-            "schema": {
-              "type": "openapi3",
-              "language": "yaml",
-              "schema": $(jq -Rs . < "${OPENAPI_FILE}")
-            }
-          }
-          EOF
+            -d "{\"content\": ${CONTENT}}"
 
-      # Trigger monitor run (integration tests in Postman)
-      - name: Run Postman Monitor
-        if: vars.POSTMAN_MONITOR_ID != ''
-        run: |
-          echo "Triggering monitor run for monitor ${POSTMAN_MONITOR_ID}"
-          
-          MONITOR_RUN=$(curl -sS -X POST \
-            "https://api.getpostman.com/monitors/${{ vars.POSTMAN_MONITOR_ID }}/run" \
-            -H "X-Api-Key: ${POSTMAN_API_KEY}")
-          
-          echo "Monitor run triggered: $MONITOR_RUN"
     
