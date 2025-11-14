@@ -12,7 +12,7 @@ servers:
   - url: https://network.ruuvi.com
 
 tags:
-  - name: Sensor Settings
+  - name: Sensor-Settings
 
 paths:
   /sensor-settings:

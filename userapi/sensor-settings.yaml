@@ -3,7 +3,7 @@ post:
   description: Creates a new setting for given sensor
   operationId: setSensorSetting
   tags:
-    - Sensor Settings
+    - Sensor-Settings
   security:
     - bearerAuth: []
   requestBody:
