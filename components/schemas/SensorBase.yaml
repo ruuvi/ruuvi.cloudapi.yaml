@@ -1,0 +1,58 @@
+type: object
+required:
+  - owner
+  - sensor
+  - name
+  - public
+  - canShare
+  - offsetTemperature
+  - offsetHumidity
+  - offsetPressure
+  - customProfile
+properties:
+  owner:
+    type: string
+    format: email
+    example: otso@ruuvi.com
+
+  sensor:
+    type: string
+    description: MAC address of the sensor
+    example: C6:F1:E7:D3:DA:11
+
+  name:
+    type: string
+    example: Saarvahtra Greenhouse DA11
+
+  picture:
+    type: string
+    format: uri
+    nullable: true
+    example: https://prod-sensor-profile-pictures.s3.eu-central-1.amazonaws.com/78f0acd7-0181-4032-b82e-4c69d79ab3e9.jpg
+
+  public:
+    type: boolean
+    example: false
+
+  canShare:
+    type: boolean
+    example: true
+
+  offsetTemperature:
+    type: number
+    format: float
+    example: 0
+
+  offsetHumidity:
+    type: number
+    format: float
+    example: 0
+
+  offsetPressure:
+    type: number
+    format: float
+    example: 0
+
+  customProfile:
+    type: boolean
+    example: false

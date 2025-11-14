@@ -1,0 +1,12 @@
+type: object
+allOf:
+  - $ref: './SensorBase.yaml'
+  - type: object
+    required:
+      - subscription
+      - settings
+    properties:
+      subscription:
+        $ref: './SubscriptionResult.yaml'
+      settings:
+        $ref: './SettingResult.yaml'

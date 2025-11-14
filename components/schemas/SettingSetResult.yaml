@@ -4,7 +4,7 @@ required:
 properties:
   action:
     type: string
-    description: Outcome of the setting operation
+    description: Outcome of the set setting operation
     enum:
       - added
       - updated

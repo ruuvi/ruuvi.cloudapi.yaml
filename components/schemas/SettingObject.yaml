@@ -1,0 +1,12 @@
+type: object
+description: >
+  Sensor settings as arbitrary key–value pairs.
+  - Up to 1000 keys (maxProperties = 1000).
+  - Keys are strings (max 100 characters, enforced by implementation).
+  - Values are strings (max 1000 characters).
+maxProperties: 1000
+additionalProperties:
+  type: string
+  maxLength: 1000
+example:
+  description: '{"description": "CuriousSensor"}'
