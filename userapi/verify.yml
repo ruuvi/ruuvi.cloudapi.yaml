@@ -1,0 +1,139 @@
+get: 
+  summary: Verify a user's email with a verification code to get an access token
+  description: >
+    Verify a user's email with a verification code to get an access token.
+  operationId: verifyUser
+  tags:
+    - Verify-User
+  parameters:
+    - name: token
+      in: query
+      required: true
+      schema:
+        type: string
+      example: "BCDF"
+  responses:
+    '200':
+      description: Verification code successful
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../components/schemas/verifyResult.yaml'
+
+    '400':
+      description: >
+        INVALID - Missing or malformed fields  
+        Code missing
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "INVALID"
+                code: "ER_INVALID_ARGUMENT"
+                message: "Missing token"
+    '403':
+      description: >
+        Forbidden - Verification code invalid or expired
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid_code:
+              value:
+                result: "Code used or expired."
+                error: "ER_FORBIDDEN"
+                code: "ER_INVALID_VERIFICATION_CODE"
+                message: "Verification code is invalid or expired"
+
+    '429':
+      description: >
+        Too many requests - Rate limit exceeded
+        Rate limits apply per IP address and total. 
+        Try again later.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            conflict:
+              value:
+                result: "error"
+                error: "Too many requests"
+                code: "ER_THROTTLED"
+                
+# post: 
+#   summary: Verify a user's email with a verification code to get an access token
+#   description: >
+#     Verify a user's email with a verification code to get an access token.
+#   operationId: verifyUser
+#   tags:
+#     - Verify-User
+#   requestBody:
+#     required: true
+#     content:
+#       application/json:
+#         schema:
+#           type: object
+#           required:
+#             - token
+#           properties:
+#             token:
+#               type: string
+#         examples:
+#           basic:
+#             value:
+#               token: "BCDF"
+#   responses:
+#     '200':
+#       description: Verification code successful
+#       content:
+#         application/json:
+#           schema:
+#             allOf:
+#               - $ref: '../components/schemas/Success.yaml'
+#               - type: object
+#                 properties:
+#                   data:
+#                     $ref: '../components/schemas/verifyResult.yaml'
+# 
+#     '400':
+#       description: >
+#         INVALID - Missing or malformed fields  
+#         Code missing
+#       content:
+#         application/json:
+#           schema:
+#             $ref: '../components/schemas/Error.yaml'
+#           examples:
+#             invalid:
+#               value:
+#                 result: "error"
+#                 error: "INVALID"
+#                 code: "ER_INVALID_EMAIL_ADDRESS"
+#                 message: "Invalid e-mail address: ${email}"
+# 
+#     '429':
+#       description: >
+#         Too many requests - Rate limit exceeded
+#         Rate limits apply per IP address and total. 
+#         Try again later.
+#       content:
+#         application/json:
+#           schema:
+#             $ref: '../components/schemas/Error.yaml'
+#           examples:
+#             conflict:
+#               value:
+#                 result: "error"
+#                 error: "Too many requests"
+#                 code: "ER_THROTTLED"

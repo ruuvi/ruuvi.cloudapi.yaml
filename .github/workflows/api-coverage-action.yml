@@ -1,0 +1,72 @@
+name: API coverage with Reqover
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    env:
+      # API base URL that Reqover forwards to
+      BASE_URL: ${{ vars.BASE_URL }}
+      # Proxy address tests will hit
+      REQOVER_PROXY: ${{ vars.REQOVER_PROXY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Bundle OpenAPI
+      - name: Bundle OpenAPI (User API)
+        run: |
+          mkdir -p userapi
+          npx -y @redocly/cli@latest bundle \
+            userapi/openapi.yaml \
+            -o userapi/bundle.yaml
+
+      # Start Reqover recorder as proxy
+      - name: Start Reqover recorder
+        run: |
+          mkdir -p reqover-results
+          docker run -d --name reqover-recorder \
+            -p 3000:3000 \
+            -v "$PWD/reqover-results:/reqover" \
+            reqover/reqover-cli record \
+              -t "${BASE_URL}"
+          # tiny delay so the proxy is actually listening
+          sleep 5
+
+      # Run Schemathesis through the Reqover proxy
+      - name: Run Schemathesis via Reqover
+        env:
+          USER_TOKEN: ${{ secrets.USER_TOKEN }}
+        run: |
+          uvx schemathesis run userapi/bundle.yaml \
+            --url "${REQOVER_PROXY}" \
+            --header "Authorization: ${USER_TOKEN}"
+
+      # Stop recorder (optional, but keeps logs clean)
+      - name: Stop Reqover recorder
+        if: always()
+        run: |
+          docker logs reqover-recorder || true
+          docker stop reqover-recorder || true
+          docker rm reqover-recorder || true
+
+      # Generate Reqover coverage report
+      - name: Generate Reqover coverage report
+        run: |
+          SPEC_FILE="userapi/bundle.yaml"
+
+          npx -y reqover generate \
+            -f "$SPEC_FILE" \
+            -d reqover-results \
+            --html
+
+      # Upload the coverage HTML as artifact
+      - name: Upload Reqover coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-coverage-reqover
+          path: .reqover
