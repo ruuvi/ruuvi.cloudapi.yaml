@@ -7,6 +7,7 @@ post:
   operationId: registerUser
   tags:
     - Register-User
+  security: []
   requestBody:
     required: true
     content:
@@ -48,9 +49,9 @@ post:
             invalid:
               value:
                 result: "error"
-                error: "INVALID"
-                code: "ER_INVALID_EMAIL_ADDRESS"
-                message: "Invalid e-mail address: ${email}"
+                error: "Invalid e-mail address: ${email}"
+                code: "ER_INVALID"
+                sub_code: "ER_INVALID_EMAIL_ADDRESS"
 
     '429':
       description: >
