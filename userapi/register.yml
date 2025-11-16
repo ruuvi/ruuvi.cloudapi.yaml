@@ -1,0 +1,69 @@
+post: 
+  summary: Register a new user or create new access token for existing user
+  description: >
+    Requests a verification code to be emailed. 
+    The verification code is then entered to /verify to get the access token.
+    To protect against spam, this endpoint is rate limited.
+  operationId: registerUser
+  tags:
+    - Register-User
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - email
+          properties:
+            email:
+              type: string
+              format: email
+        examples:
+          basic:
+            value:
+              email: "otso+docs@ruuvi.com"
+  responses:
+    '200':
+      description: Verification code emailed successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../components/schemas/registerResult.yaml'
+
+    '400':
+      description: >
+        INVALID - Missing or malformed fields  
+        Email missing or not valid format
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "INVALID"
+                code: "ER_INVALID_EMAIL_ADDRESS"
+                message: "Invalid e-mail address: ${email}"
+
+    '429':
+      description: >
+        Too many requests - Rate limit exceeded
+        Rate limits apply per email address, IP address and total. 
+        Try again later.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            conflict:
+              value:
+                result: "error"
+                error: "Too many requests"
+                code: "ER_THROTTLED"

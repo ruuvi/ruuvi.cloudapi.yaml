@@ -1,3 +1,11 @@
+[profiles.default]
+[profiles.default.strategies."post:/register"]
+# Replace the entire request body strategy with a static payload
+# Hypothesis will not fuzz inside this object
+# Avoid spamming innocent emailboxes
+given = "st.just({\"email\": \"otso+docs@ruuvi.com\"})"
+
+
 [reports.junit]
 enabled = true
 path = "./schemathesis-report/schemathesis-junit.xml"

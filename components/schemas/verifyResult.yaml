@@ -1,0 +1,19 @@
+type: object
+required:
+  - email
+  - accessToken
+  - newUser
+properties:
+  email:
+    type: string
+    format: email
+    description: Email verified
+    example: otso+docs@ruuvi.com
+  accessToken:
+    type: string
+    description: Access token for the verified user
+    example: "753133/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  newUser:
+    type: boolean
+    description: Indicates if the user is new
+    example: true
