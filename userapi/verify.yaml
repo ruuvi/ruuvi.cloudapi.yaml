@@ -4,7 +4,7 @@ get:
     Verify a user's email with a verification code to get an access token.
   operationId: verifyUser
   tags:
-    - Verify-User
+    - Register-User
   security: []
   parameters:
     - name: token
