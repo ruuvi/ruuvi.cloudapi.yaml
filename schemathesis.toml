@@ -1,0 +1,7 @@
+[reports.junit]
+enabled = true
+path = "./schemathesis-report/schemathesis-junit.xml"
+
+[reports.har]
+enabled = true
+path = "./schemathesis-report/schemathesis-har.json"

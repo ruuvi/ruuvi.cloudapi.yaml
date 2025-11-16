@@ -8,6 +8,39 @@ npx -y @redocly/cli@latest bundle \
   -o userapi/bundle.yaml
 ```
 
+## Publishing to GitBook
+Run `Publish OpenAPI to GitBook` action manually in GitHub actions
+
+## Publishing to Postman
+Run `Publish API to Postman and run tests` action manually in GitHub actions
+
+## Fuzzing API
+### 1. Configure environments
+Copy the template file and populate it with both your testing and production credentials:
+
+```
+cp .env.example .env
+# edit .env
+```
+
+Each environment carries the `BASE_URL`, `USER_TOKEN`, and `SHAREE_ACCOUNT` variables that
+Schemathesis will read when executed through the helper script.
+
+### 2. Run Schemathesis for a specific environment
+```
+./scripts/run-schemathesis.sh test
+# or
+./scripts/run-schemathesis.sh production
+```
+
+The script loads the matching values from `.env` and executes:
+
+```
+uvx schemathesis run userapi/bundle.yaml \
+  --url ${BASE_URL} \
+  --header "Authorization: ${USER_TOKEN}" \
+```
+
 ## Getting Postman identifiers:
 - Workspaces
 ```
@@ -53,8 +86,3 @@ curl -X GET \
   -H "Accept: application/vnd.api.v10+json" \
   -H "Content-Type: application/json"
 ```
-
-## Fuzzing API
-uvx schemathesis run userapi/bundle.yaml \
-  --url ${BASE_URL} \
-  --header "Authorization: ${RUUVI_CLOUD_TOKEN}"
