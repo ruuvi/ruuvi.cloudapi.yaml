@@ -5,6 +5,7 @@ get:
   operationId: verifyUser
   tags:
     - Verify-User
+  security: []
   parameters:
     - name: token
       in: query
@@ -24,7 +25,6 @@ get:
                 properties:
                   data:
                     $ref: '../components/schemas/verifyResult.yaml'
-
     '400':
       description: >
         INVALID - Missing or malformed fields  
@@ -37,9 +37,9 @@ get:
             invalid:
               value:
                 result: "error"
-                error: "INVALID"
-                code: "ER_INVALID_ARGUMENT"
-                message: "Missing token"
+                error: "Missing token"
+                code: "ER_INVALID"
+                sub_code: "ER_INVALID_ARGUMENT"
     '403':
       description: >
         Forbidden - Verification code invalid or expired
@@ -50,10 +50,10 @@ get:
           examples:
             invalid_code:
               value:
-                result: "Code used or expired."
-                error: "ER_FORBIDDEN"
-                code: "ER_INVALID_VERIFICATION_CODE"
-                message: "Verification code is invalid or expired"
+                result: "error"
+                error: "Code used or expired"
+                code: "ER_FORBIDDEN"
+                sub_code: "ER_TOKEN_EXPIRED"
 
     '429':
       description: >
