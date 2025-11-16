@@ -12,11 +12,17 @@ servers:
   - url: https://network.ruuvi.com
 
 tags:
+  - name: Register-User
   - name: Sensor-Settings
 
+
 paths:
+  /register: 
+    $ref: 'register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
+  /verify: 
+    $ref: 'verify.yaml'
 
 components:
   securitySchemes:
