@@ -1,6 +1,12 @@
 get:
   summary: Get Ruuvi Air firmware update information
-  description: Returns latest, beta, alpha and historical firmware versions for Ruuvi Air. No authentication required.
+  description: >
+    Returns latest, beta, alpha and historical firmware versions for Ruuvi Air. No authentication required.
+    Final path is formed by joining the "url" field with the "fileName" field from the response.
+    Generally only ruuvi_air_fw.signed.bin is needed, other files are restoring production firmware after a 
+    factory reset. 
+
+    Versions postfixed with +dev are development versions and signed with public development keys.
   operationId: getAirFirmwareUpdate
   tags:
     - Air-Firmware
