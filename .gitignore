@@ -9,3 +9,4 @@ bundle.yaml
 
 # Fuzzing output
 .hypothesis
+schemathesis-report

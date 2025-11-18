@@ -1,0 +1,211 @@
+get:
+  summary: Get Ruuvi Air firmware update information
+  description: >
+    Returns latest, beta, alpha and historical firmware versions for Ruuvi Air. No authentication required.
+    Final path is formed by joining the "url" field with the "fileName" field from the response, 
+    i.e. ${url}/${fileName}.
+
+    Generally only ruuvi_air_fw.signed.bin is needed, other files are restoring production firmware after a 
+    factory reset or updating the bootloader / firmware installer. Check Ruuvi Air developer documentation for details.
+
+    Versions postfixed with +dev are development versions and signed with public development keys.
+  operationId: getAirFirmwareUpdate
+  tags:
+    - Air-Firmware
+  security: []
+  responses:
+    '200':
+      description: Firmware update information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AirFirmwareResponse'
+          examples:
+            success:
+              value:
+                result: "success"
+                data:
+                  latest:
+                    version: "v1.0.6"
+                    url: "https://fwupdate.ruuvi.com/air/106"
+                    created_at: "2025-10-06T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  beta:
+                    version: "v1.0.7"
+                    url: "https://fwupdate.ruuvi.com/air/107"
+                    created_at: "2025-10-17T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  alpha:
+                    version: "v1.0.7+dev"
+                    url: "https://fwupdate.ruuvi.com/air/107_dev"
+                    created_at: "2025-10-17T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.7:
+                    version: "v1.0.7"
+                    url: "https://fwupdate.ruuvi.com/air/107"
+                    created_at: "2025-10-17T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.7+dev:
+                    version: "v1.0.7+dev"
+                    url: "https://fwupdate.ruuvi.com/air/107_dev"
+                    created_at: "2025-10-17T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.6:
+                    version: "v1.0.6"
+                    url: "https://fwupdate.ruuvi.com/air/106"
+                    created_at: "2025-10-06T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.6+dev:
+                    version: "v1.0.6+dev"
+                    url: "https://fwupdate.ruuvi.com/air/106_dev"
+                    created_at: "2025-10-06T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.4:
+                    version: "v1.0.4"
+                    url: "https://fwupdate.ruuvi.com/air/104"
+                    created_at: "2025-10-01T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.3:
+                    version: "v1.0.3"
+                    url: "https://fwupdate.ruuvi.com/air/103"
+                    created_at: "2025-10-01T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.2:
+                    version: "v1.0.2"
+                    url: "https://fwupdate.ruuvi.com/air/102"
+                    created_at: "2025-10-01T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                    fwloader: "ruuvi_air_fw_loader.signed.bin"
+                    mcuboot_s1: "signed_by_mcuboot_and_b0_s1_image.bin"
+                    mcuboot: "signed_by_mcuboot_and_b0_mcuboot.bin"
+                  v1.0.1:
+                    version: "v1.0.1"
+                    url: "https://fwupdate.ruuvi.com/air/101"
+                    created_at: "2025-09-25T21:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v1.0.0:
+                    version: "v1.0.0"
+                    url: "https://fwupdate.ruuvi.com/air/015"
+                    created_at: "2025-09-25T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.1.5:
+                    version: "v0.1.5"
+                    url: "https://fwupdate.ruuvi.com/air/015"
+                    created_at: "2025-09-18T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.1.4:
+                    version: "v0.1.4"
+                    url: "https://fwupdate.ruuvi.com/air/014"
+                    created_at: "2025-09-15T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.1.3:
+                    version: "v0.1.3"
+                    url: "https://fwupdate.ruuvi.com/air/013"
+                    created_at: "2025-09-09T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.1.1:
+                    version: "v0.1.1"
+                    url: "https://fwupdate.ruuvi.com/air/011"
+                    created_at: "2025-09-03T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.1.0:
+                    version: "v0.1.0"
+                    url: "https://fwupdate.ruuvi.com/air/010"
+                    created_at: "2025-08-27T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.0.2:
+                    version: "v0.0.2"
+                    url: "https://fwupdate.ruuvi.com/air/002"
+                    created_at: "2025-08-19T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+                  v0.0.1:
+                    version: "v0.0.1"
+                    url: "https://fwupdate.ruuvi.com/air/001"
+                    created_at: "2024-06-13T10:09:28Z"
+                    versionCode: 255
+                    fileName: "ruuvi_air_fw.signed.bin"
+components:
+  schemas:
+    AirFirmwareResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/AirFirmwareData'
+    AirFirmwareData:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/AirFirmwareVersion'
+    AirFirmwareVersion:
+      type: object
+      properties:
+        version:
+          type: string
+        url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        versionCode:
+          type: integer
+        fileName:
+          type: string
+        fwloader:
+          type: string
+        mcuboot_s1:
+          type: string
+        mcuboot:
+          type: string
+      required:
+        - version
+        - url
+        - created_at
+        - versionCode
+        - fileName
