@@ -1,12 +1,23 @@
 type: object
 description: >
-  Sensor settings as arbitrary key–value pairs.
+  Sensor settings as arbitrary key–value pairs where each setting contains a value and timestamp.
   - Up to 1000 keys (maxProperties = 1000).
-  - Keys are strings (max 100 characters, enforced by implementation).
-  - Values are strings (max 1000 characters).
+  - Keys are setting types (strings, max 100 characters, enforced by implementation).
+  - Values are objects containing the setting value and lastUpdated timestamp.
 maxProperties: 1000
 additionalProperties:
-  type: string
-  maxLength: 1000
+  type: object
+  required:
+    - value
+    - lastUpdated
+  properties:
+    value:
+      type: string
+      maxLength: 1000
+    lastUpdated:
+      type: string
+      format: date-time
 example:
-  description: '{"description": "CuriousSensor"}'
+  description:
+    value: '{"description": "CuriousSensor"}'
+    lastUpdated: 2025-11-21T10:35:42.000Z
