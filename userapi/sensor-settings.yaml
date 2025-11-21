@@ -204,8 +204,11 @@ get:
                         offlineAlertAllowed: true
                         isActive: true
                         endAt: "2026-07-24T10:35:42.000Z"
+                        lastUpdated: "2025-11-21T10:35:42.000Z"
                       settings:
-                        description: "\"Jännä\""
+                        description:
+                          value: "\"Jännä\""
+                          lastUpdated: "2025-11-21T10:35:42.000Z"
 
     '401':
       description: UNAUTHORIZED - Auth token missing
