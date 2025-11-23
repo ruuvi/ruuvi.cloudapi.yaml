@@ -2,7 +2,14 @@ post:
   summary: Register a token for push notifications
   description: >
     Registers a push notification token for the authenticated user.
-    The token is used to send push notifications to the user's devices.
+    
+    The Type of the token determines the handler used to send notifications. 
+    Currently supported types are `iOS` and `Android`, but other values are allowed 
+    for future compatibility.
+
+    Both Android and iOS handlers do not use the optional parameters.
+
+    Rate limits apply per user account, IP address and total calls. 
   operationId: pushRegister
   tags:
     - Push-Notifications
@@ -21,7 +28,7 @@ post:
           properties:
             token:
               type: string
-              description: Push notification token
+              description: Push notification token, used to authenticate at the push notification services
               example: "integrationtestonetokens@ruuvi.com"
             type:
               type: string
@@ -34,13 +41,13 @@ post:
               example: "Otso's mobile phone 2"
             data:
               type: object
-              description: Additional nested data for the device
+              description: Additional nested data for the device. Handler-specific.
               additionalProperties: true
               example:
                 nested: "CI_AUTH_PAYLOAD"
             params:
               type: object
-              description: Optional parameters for push notification behavior
+              description: Optional parameters for push notification behavior. Handler-specific.
               additionalProperties: true
               example:
                 send_data: true
