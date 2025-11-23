@@ -146,7 +146,7 @@ post:
     '429':
       description: >
         Too many requests - Rate limit exceeded
-        Rate limits apply per user account, IP address and total. 
+        Rate limits apply per user account, IP address and total calls. 
         Try again later.
       content:
         application/json:
