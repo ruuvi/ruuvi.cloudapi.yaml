@@ -3,7 +3,7 @@ post:
   description: >
     Registers a push notification token for the authenticated user.
     
-    The Type of the token determines the handler used to send notifications. 
+    The type of the token determines the handler used to send notifications. 
     Currently supported types are `iOS` and `Android`, but other values are allowed 
     for future compatibility.
 
