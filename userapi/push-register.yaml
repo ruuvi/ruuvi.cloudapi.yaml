@@ -1,0 +1,153 @@
+post: 
+  summary: Register a token for push notifications
+  description: >
+    Registers a push notification token for the authenticated user.
+    The token is used to send push notifications to the user's devices.
+  operationId: pushRegister
+  tags:
+    - Push-Notifications
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - token
+            - type
+            - name
+          properties:
+            token:
+              type: string
+              description: Push notification token
+              example: "integrationtestonetokens@ruuvi.com"
+            type:
+              type: string
+              description: Device platform type
+              enum: [iOS, Android]
+              example: "iOS"
+            name:
+              type: string
+              description: Human-readable device name
+              example: "Otso's mobile phone 2"
+            data:
+              type: object
+              description: Additional nested data for the device
+              additionalProperties: true
+              example:
+                nested: "CI_AUTH_PAYLOAD"
+            params:
+              type: object
+              description: Optional parameters for push notification behavior
+              additionalProperties: true
+              example:
+                send_data: true
+        examples:
+          basic:
+            value:
+              token: "integrationtestonetokens@ruuvi.com"
+              type: "iOS"
+              name: "Otso's mobile phone 2"
+              data:
+                nested: "CI_AUTH_PAYLOAD"
+              params:
+                send_data: true
+  responses:
+    '200':
+      description: Push notification token registered successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - id
+                      - lastAccessed
+                      - name
+                    properties:
+                      id:
+                        type: integer
+                        format: int64
+                        description: Unique identifier for the registered push token
+                        example: 6037729964
+                      lastAccessed:
+                        type: integer
+                        format: int64
+                        description: Unix timestamp of last access
+                        example: 1763900053
+                      name:
+                        type: string
+                        description: Human-readable device name
+                        example: "Otso's mobile phone 2"
+          examples:
+            success:
+              value:
+                result: success
+                data:
+                  id: 6037729964
+                  lastAccessed: 1763900053
+                  name: "Otso's mobile phone 2"
+
+    '400':
+      description: >
+        INVALID - Missing or malformed fields  
+        (`token`, `type`, or `name` missing; invalid type value)
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "Missing required field: token"
+                code: "ER_INVALID_ARGUMENT"
+                sub_code: "ER_INVALID_ARGUMENT"
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "UNAUTHORIZED"
+                code: "ER_UNAUTHORIZED"
+
+    '403':
+      description: FORBIDDEN - User does not have permission to register push tokens
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            forbidden:
+              value:
+                result: "error"
+                error: "FORBIDDEN"
+                code: "ER_FORBIDDEN"
+
+    '429':
+      description: >
+        Too many requests - Rate limit exceeded
+        Rate limits apply per user account, IP address and total. 
+        Try again later.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            throttled:
+              value:
+                result: "error"
+                error: "Too many requests"
+                code: "ER_THROTTLED"
