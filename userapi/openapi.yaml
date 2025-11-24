@@ -15,25 +15,29 @@ servers:
   - url: https://network.ruuvi.com
   - url: https://testnet.ruuvi.com
 
-
 tags:
+  - name: Air-Firmware
+    description: Ruuvi Air firmware update information
   - name: Register-User
     description: User registration and verification
   - name: Sensor-Settings
     description: Sensor settings management
-  - name: Air-Firmware
-    description: Ruuvi Air firmware update information
+  - name: Push-Notifications
+    description: Push notification token management
 
 
 paths:
+  /air_firmwareupdate:
+    $ref: 'air-firmware.yaml'
+  /push-register:
+    $ref: 'push-register.yaml'
   /register: 
     $ref: 'register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
   /verify: 
     $ref: 'verify.yaml'
-  /air_firmwareupdate:
-    $ref: 'air-firmware.yaml'
+  
 
 components:
   securitySchemes:
