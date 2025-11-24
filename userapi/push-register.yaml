@@ -7,7 +7,8 @@ post:
     Currently supported types are `iOS` and `Android`, but other values are allowed 
     for future compatibility.
 
-    Both Android and iOS handlers do not use the optional parameters.
+    Both Android and iOS handlers use params to define the language of the notifications, default "en".
+    Supported languages as of 2025-11 are English (en), Finnish (fi), Swedish (sv), French (fr), Russian (ru), and German (de).
 
     Rate limits apply per user account, IP address and total calls. 
   operationId: pushRegister
@@ -52,15 +53,6 @@ post:
               example:
                 send_data: true
         examples:
-          basic:
-            value:
-              token: "integrationtestonetokens@ruuvi.com"
-              type: "iOS"
-              name: "Otso's mobile phone 2"
-              data:
-                nested: "CI_AUTH_PAYLOAD"
-              params:
-                send_data: true
           android:
             value:
               name: "Google Pixel 7"
@@ -68,6 +60,13 @@ post:
                 language: "en"
               token: "dWD8xlZKS7y...******...rpeM"
               type: "Android"
+          ios:
+            value:
+              name: "iPhone 14 Pro"
+              params:
+                language: "en"
+              token: "dWD8xlZKS7y...******...rpeM"
+              type: "iOS"
   responses:
     '200':
       description: Push notification token registered successfully
