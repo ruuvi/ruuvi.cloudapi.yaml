@@ -3,7 +3,7 @@ post:
   description: >
     Registers a push notification token for the authenticated user.
     
-    The Type of the token determines the handler used to send notifications. 
+    The type of the token determines the handler used to send notifications. 
     Currently supported types are `iOS` and `Android`, but other values are allowed 
     for future compatibility.
 
@@ -153,7 +153,7 @@ post:
     '429':
       description: >
         Too many requests - Rate limit exceeded
-        Rate limits apply per user account, IP address and total. 
+        Rate limits apply per user account, IP address and total calls. 
         Try again later.
       content:
         application/json:
