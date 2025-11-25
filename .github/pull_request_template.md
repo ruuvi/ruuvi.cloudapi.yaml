@@ -10,4 +10,4 @@ Here is a quick checklist for the PR:
 
 ## Housekeeping
 
-An automated check will verify that this PR is linked to an issue in a project, and the issue has metadata for tracking the workflow. These checks help us detect if any issues or pull requests have been left hanging. 
+An automated check will verify that this PR is linked to an issue by looking for keywords like "fixes #123" or "closes #123" in the PR description. Please ensure you include such a keyword referencing the relevant issue, and that the issue has metadata for tracking the workflow. These checks help us detect if any issues or pull requests have been left hanging.
