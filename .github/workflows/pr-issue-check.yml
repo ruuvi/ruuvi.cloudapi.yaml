@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: read
-      pull-requests: write
+      pull-requests: read
+      checks: write
     steps:
       - name: Check if PR is linked to an issue
         uses: actions/github-script@v7
@@ -19,34 +20,61 @@ jobs:
             const pr = context.payload.pull_request;
             const prBody = pr.body || '';
             
+            // Create a check run for status updates
+            const { data: checkRun } = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Issue Link Validation',
+              head_sha: pr.head.sha,
+              status: 'in_progress',
+              output: {
+                title: 'Validating PR issue link',
+                summary: 'Checking if PR is linked to an issue with a type...'
+              }
+            });
+            
             // Look for issue references in PR body (e.g., #123, fixes #123, closes #123)
-            const issuePattern = /(close[sd]?|fix(e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
+            // Pattern explanation:
+            // - keyword: Linking keyword (close[sd]?|fix(e[sd])?|resolve[sd]?)
+            // - withKeyword: Issue number after keyword
+            // - standalone: Issue number for standalone # reference
+            const issuePattern = /(?<keyword>close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(?<withKeyword>\d+)|#(?<standalone>\d+)/gi;
             const matches = [...prBody.matchAll(issuePattern)];
             
             if (matches.length === 0) {
-              const message = '❌ This PR is not linked to any issue. Please link it to exactly one issue using keywords like "fixes #123" or "closes #123" in the PR description.';
-              await github.rest.issues.createComment({
+              const message = 'This PR is not linked to any issue. Please link it to exactly one issue using keywords like "fixes #123" or "closes #123" in the PR description.';
+              await github.rest.checks.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: pr.number,
-                body: message
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: '❌ No linked issue found',
+                  summary: message
+                }
               });
               core.setFailed(message);
               return;
             }
             
-            // Extract unique issue numbers
-            const issueNumbers = [...new Set(matches.map(match => match[3] || match[4]).filter(Boolean))];
+            // Extract unique issue numbers from named capture groups
+            const issueNumbers = [...new Set(matches.map(match => match.groups.withKeyword || match.groups.standalone).filter(Boolean))];
             console.log(`Found linked issues: ${issueNumbers.join(', ')}`);
             
             // Enforce 1:1 PR to issue relationship
             if (issueNumbers.length > 1) {
-              const message = `❌ This PR is linked to ${issueNumbers.length} issues (#${issueNumbers.join(', #')}). Please link it to exactly one issue.`;
-              await github.rest.issues.createComment({
+              const message = `This PR is linked to ${issueNumbers.length} issues (#${issueNumbers.join(', #')}). Please link it to exactly one issue.`;
+              await github.rest.checks.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: pr.number,
-                body: message
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: '❌ Multiple issues linked',
+                  summary: message
+                }
               });
               core.setFailed(message);
               return;
@@ -80,45 +108,65 @@ jobs:
               const issue = result.repository.issue;
               
               if (!issue) {
-                const message = `❌ Issue #${issueNumber} not found.`;
-                await github.rest.issues.createComment({
+                const message = `Issue #${issueNumber} not found.`;
+                await github.rest.checks.update({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  issue_number: pr.number,
-                  body: message
+                  check_run_id: checkRun.id,
+                  status: 'completed',
+                  conclusion: 'failure',
+                  output: {
+                    title: '❌ Issue not found',
+                    summary: message
+                  }
                 });
                 core.setFailed(message);
                 return;
               }
               
               if (!issue.issueType) {
-                const message = `❌ Issue #${issueNumber} does not have a type set. Please set an issue type (bug, feature, question, etc.) on the linked issue.`;
-                await github.rest.issues.createComment({
+                const message = `Issue #${issueNumber} does not have a type set. Please set an issue type (bug, feature, question, etc.) on the linked issue.`;
+                await github.rest.checks.update({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  issue_number: pr.number,
-                  body: message
+                  check_run_id: checkRun.id,
+                  status: 'completed',
+                  conclusion: 'failure',
+                  output: {
+                    title: '❌ Issue type not set',
+                    summary: message
+                  }
                 });
                 core.setFailed(message);
                 return;
               }
               
-              const message = `✅ PR is properly linked to issue #${issueNumber} with type: ${issue.issueType.name}`;
-              console.log(message);
-              await github.rest.issues.createComment({
+              const message = `PR is properly linked to issue #${issueNumber} with type: ${issue.issueType.name}`;
+              await github.rest.checks.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: pr.number,
-                body: message
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'success',
+                output: {
+                  title: '✅ Issue link validated',
+                  summary: message
+                }
               });
+              console.log(message);
               
             } catch (error) {
-              const message = `❌ Error fetching issue #${issueNumber}: ${error.message}`;
-              await github.rest.issues.createComment({
+              const message = `Error fetching issue #${issueNumber}: ${error.message}`;
+              await github.rest.checks.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: pr.number,
-                body: message
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: '❌ Validation error',
+                  summary: message
+                }
               });
               core.setFailed(message);
             }
