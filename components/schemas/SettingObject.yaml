@@ -1,23 +1,20 @@
 type: object
 description: >
-  Sensor settings as arbitrary key–value pairs where each setting contains a value and timestamp.
-  - Up to 1000 keys (maxProperties = 1000).
-  - Keys are setting types (strings, max 100 characters, enforced by implementation).
-  - Values are objects containing the setting value and lastUpdated timestamp.
+  Sensor settings as flattened key-value pairs.
+  - Setting values are stored with keys matching the setting type name.
+  - Each setting has a corresponding `{settingName}_lastUpdated` field containing an epoch timestamp.
+  - Up to 500 setting pairs (1000 total properties including timestamps).
 maxProperties: 1000
 additionalProperties:
-  type: object
-  required:
-    - value
-    - lastUpdated
-  properties:
-    value:
-      type: string
+  oneOf:
+    - type: string
       maxLength: 1000
-    lastUpdated:
-      type: string
-      format: date-time
+      description: Setting value (for keys without _lastUpdated suffix)
+    - type: integer
+      format: int64
+      description: Epoch timestamp in seconds (for keys with _lastUpdated suffix)
 example:
-  description:
-    value: '{"description": "CuriousSensor"}'
-    lastUpdated: 2025-11-21T10:35:42.000Z
+  description: '"Fridge thermometer"'
+  description_lastUpdated: 1732187742
+  displayOrder: '["TEMPERATURE_0", "TEMPERATURE_1", "HUMIDITY_1"]'
+  displayOrder_lastUpdated: 1732187742

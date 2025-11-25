@@ -56,3 +56,11 @@ properties:
   customProfile:
     type: boolean
     example: false
+
+  lastUpdated:
+    type: integer
+    format: int64
+    description: >
+      Epoch timestamp in seconds when the sensor was last updated.
+      If missing, it is assumed to be the current time.
+    example: 1732187742
