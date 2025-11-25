@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: read
-      pull-requests: read
+      pull-requests: write
     steps:
       - name: Check if PR is linked to an issue
         uses: actions/github-script@v7
@@ -24,7 +24,14 @@ jobs:
             const matches = [...prBody.matchAll(issuePattern)];
             
             if (matches.length === 0) {
-              core.setFailed('❌ This PR is not linked to any issue. Please link it to exactly one issue using keywords like "fixes #123" or "closes #123" in the PR description.');
+              const message = '❌ This PR is not linked to any issue. Please link it to exactly one issue using keywords like "fixes #123" or "closes #123" in the PR description.';
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: message
+              });
+              core.setFailed(message);
               return;
             }
             
@@ -34,7 +41,14 @@ jobs:
             
             // Enforce 1:1 PR to issue relationship
             if (issueNumbers.length > 1) {
-              core.setFailed(`❌ This PR is linked to ${issueNumbers.length} issues (${issueNumbers.join(', ')}). Please link it to exactly one issue.`);
+              const message = `❌ This PR is linked to ${issueNumbers.length} issues (#${issueNumbers.join(', #')}). Please link it to exactly one issue.`;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: message
+              });
+              core.setFailed(message);
               return;
             }
             
@@ -48,7 +62,10 @@ jobs:
                     issue(number: $number) {
                       number
                       title
-                      issueType
+                      issueType {
+                        id
+                        name
+                      }
                     }
                   }
                 }
@@ -63,17 +80,45 @@ jobs:
               const issue = result.repository.issue;
               
               if (!issue) {
-                core.setFailed(`❌ Issue #${issueNumber} not found.`);
+                const message = `❌ Issue #${issueNumber} not found.`;
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: message
+                });
+                core.setFailed(message);
                 return;
               }
               
               if (!issue.issueType) {
-                core.setFailed(`❌ Issue #${issueNumber} does not have a type set. Please set an issue type (bug, feature, question, etc.) on the linked issue.`);
+                const message = `❌ Issue #${issueNumber} does not have a type set. Please set an issue type (bug, feature, question, etc.) on the linked issue.`;
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: message
+                });
+                core.setFailed(message);
                 return;
               }
               
-              console.log(`✅ PR is properly linked to issue #${issueNumber} with type: ${issue.issueType}`);
+              const message = `✅ PR is properly linked to issue #${issueNumber} with type: ${issue.issueType.name}`;
+              console.log(message);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: message
+              });
               
             } catch (error) {
-              core.setFailed(`❌ Error fetching issue #${issueNumber}: ${error.message}`);
+              const message = `❌ Error fetching issue #${issueNumber}: ${error.message}`;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: message
+              });
+              core.setFailed(message);
             }
