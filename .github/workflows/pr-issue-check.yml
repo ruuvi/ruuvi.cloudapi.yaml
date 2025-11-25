@@ -20,7 +20,7 @@ jobs:
             const prBody = pr.body || '';
             
             // Look for issue references in PR body (e.g., #123, fixes #123, closes #123)
-            const issuePattern = /(close[sd]?|fix(e[sd])?|resolve[sd]?)\s+#(\d+)|#(\d+)/gi;
+            const issuePattern = /(close[sd]?|fix(e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
             const matches = [...prBody.matchAll(issuePattern)];
             
             if (matches.length === 0) {
