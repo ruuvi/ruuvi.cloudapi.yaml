@@ -14,7 +14,6 @@ required:
   - offlineAlertAllowed
   - isActive
   - endAt
-  
 properties:
   subscriptionName:
     type: string
