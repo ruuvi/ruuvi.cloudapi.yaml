@@ -14,7 +14,6 @@ required:
   - offlineAlertAllowed
   - isActive
   - endAt
-  - lastUpdated
   
 properties:
   subscriptionName:
@@ -77,5 +76,7 @@ properties:
   lastUpdated:
     type: integer
     format: int64
-    description: Epoch timestamp in seconds when the subscription was last updated
+    description: >
+      Epoch timestamp in seconds when the subscription was last updated.
+      If missing, it is assumed to be the current time.
     example: 1732187742
