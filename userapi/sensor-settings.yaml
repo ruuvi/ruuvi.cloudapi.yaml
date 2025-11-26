@@ -181,14 +181,15 @@ get:
                   sensors:
                     - owner: "otso@ruuvi.com"
                       sensor: "C6:F1:E7:D3:DA:11"
-                      name: "Saarvahtra Greenhouse DA11"
-                      picture: "https://prod-sensor-profile-pictures.s3.eu-central-1.amazonaws.com/78f0acd7-0181-4032-b82e-4c69d79ab3e9.jpg"
+                      name: "Greenhouse DA11"
+                      picture: "Greenhouse.jpg"
                       public: false
                       canShare: true
                       offsetTemperature: 0
                       offsetHumidity: 0
                       offsetPressure: 0
                       customProfile: false
+                      lastUpdated: 1732187742
                       subscription:
                         subscriptionName: "Business Standard"
                         maxClaims: 50
@@ -206,8 +207,10 @@ get:
                         endAt: "2026-07-24T10:35:42.000Z"
                         lastUpdated: 1732187742
                       settings:
-                        description: "\"Curious Sensor\""
+                        description: "\"Fridge thermometer\""
                         description_lastUpdated: 1732187742
+                        displayOrder: "[\"TEMPERATURE_0\", \"TEMPERATURE_1\", \"HUMIDITY_1\"]"
+                        displayOrder_lastUpdated: 1732187742
 
     '401':
       description: UNAUTHORIZED - Auth token missing
