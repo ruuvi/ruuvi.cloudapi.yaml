@@ -9,6 +9,7 @@ required:
   - offsetHumidity
   - offsetPressure
   - customProfile
+  - lastUpdated
 properties:
   owner:
     type: string
@@ -60,6 +61,5 @@ properties:
     type: integer
     format: int64
     description: >
-      Epoch timestamp in seconds when the sensor was last updated.
-      If missing, it is assumed to be the current time.
+      Epoch timestamp in seconds when the sensor profile was last updated.
     example: 1732187742
