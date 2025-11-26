@@ -26,8 +26,7 @@ properties:
 
   picture:
     type: string
-    format: uri
-    nullable: true
+    maxLength: 2048
     example: https://prod-sensor-profile-pictures.s3.eu-central-1.amazonaws.com/78f0acd7-0181-4032-b82e-4c69d79ab3e9.jpg
 
   public:
