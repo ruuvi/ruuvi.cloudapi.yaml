@@ -1,0 +1,33 @@
+type: object
+properties:
+  result:
+    type: string
+    example: success
+  data:
+    type: object
+    additionalProperties:
+      type: object
+      properties:
+        version:
+          type: string
+        url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        versionCode:
+          type: integer
+        fileName:
+          type: string
+        fwloader:
+          type: string
+        mcuboot_s1:
+          type: string
+        mcuboot:
+          type: string
+      required:
+        - version
+        - url
+        - created_at
+        - versionCode
+        - fileName

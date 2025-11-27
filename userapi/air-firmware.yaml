@@ -19,7 +19,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AirFirmwareResponse'
+            $ref: '../components/schemas/AirFirmwareResponse.yaml'
           examples:
             success:
               value:
@@ -169,43 +169,3 @@ get:
                     created_at: "2024-06-13T10:09:28Z"
                     versionCode: 255
                     fileName: "ruuvi_air_fw.signed.bin"
-components:
-  schemas:
-    AirFirmwareResponse:
-      type: object
-      properties:
-        result:
-          type: string
-          example: success
-        data:
-          $ref: '#/components/schemas/AirFirmwareData'
-    AirFirmwareData:
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/AirFirmwareVersion'
-    AirFirmwareVersion:
-      type: object
-      properties:
-        version:
-          type: string
-        url:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        versionCode:
-          type: integer
-        fileName:
-          type: string
-        fwloader:
-          type: string
-        mcuboot_s1:
-          type: string
-        mcuboot:
-          type: string
-      required:
-        - version
-        - url
-        - created_at
-        - versionCode
-        - fileName

@@ -1,0 +1,12 @@
+name: API linting
+
+on: [pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run linting
+        run: npx -y @redocly/cli@latest lint userapi/openapi.yaml --format=github-actions
