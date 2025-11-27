@@ -8,6 +8,7 @@ required:
   - enabled
   - description
   - triggered
+  - lastUpdated
 properties:
   type:
     $ref: './AlertType.yaml'
