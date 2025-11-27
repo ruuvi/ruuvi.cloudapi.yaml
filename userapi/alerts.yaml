@@ -2,7 +2,7 @@ post:
   summary: Create and update Alerts
   description: |
     Sets an alert on a sensor for a given metric. The alert condition is tested
-    against the absolute value received from the sensors in conjunction with the user set
+    against the absolute value received from the sensors in conjunction with the user-set
     offsets for that particular sensor.
   operationId: setAlert
   tags:
@@ -119,7 +119,7 @@ post:
             unauthorized:
               value:
                 result: "error"
-                error: "Unauthorized"
+                error: "UNAUTHORIZED"
                 code: "ER_UNAUTHORIZED"
 
     '403':
@@ -132,7 +132,7 @@ post:
             forbidden:
               value:
                 result: "error"
-                error: "Forbidden"
+                error: "FORBIDDEN"
                 code: "ER_FORBIDDEN"
 
     '409':
@@ -156,7 +156,7 @@ get:
   security:
     - bearerAuth: []
   description: >
-    Fetches alerts for all sensors user has access to or a single sensor if optional
+    Fetches alerts for all sensors the user has access to or a single sensor if an optional
     parameter is provided.
   parameters:
     - in: query
@@ -190,7 +190,7 @@ get:
                 data:
                   sensors:
                     - owner: "otso+docs@ruuvi.com"
-                      sensor: "AA:BB:CC:DD:EE:FF"
+                      sensor: "C5:2A:E7:4D:CE:7F"
                       name: "Ruuvi EEFF"
                       picture: "ruuvi_eeff.jpg"
                       public: false
@@ -248,7 +248,7 @@ get:
             unauthorized:
               value:
                 result: "error"
-                error: "Unauthorized"
+                error: "UNAUTHORIZED"
                 code: "ER_UNAUTHORIZED"
 
     '403':
@@ -261,5 +261,5 @@ get:
             forbidden:
               value:
                 result: "error"
-                error: "Forbidden"
+                error: "FORBIDDEN"
                 code: "ER_FORBIDDEN"
