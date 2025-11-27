@@ -32,20 +32,20 @@ post:
             min:
               type: number
               format: double
-              description: Lower limit for the alert condition (optional)
+              description: Lower limit for the alert condition. If missing, defaults to 0. If value was already existing, it will not be changed.
             max:
               type: number
               format: double
-              description: Upper limit for the alert condition (optional)
+              description: Upper limit for the alert condition. If missing, defaults to 0. If value was already existing, it will not be changed.
             counter:
               type: integer
-              description: Movement counter threshold (relevant for movement type alerts)
+              description: Movement counter threshold (relevant for movement type alerts). If missing, defaults to 0. If value was already existing, it will not be changed.
             description:
               type: string
-              description: User-provided description of the alert
+              description: User-provided description of the alert. If missing, defaults to empty string. If value was already existing, it will not be changed.
             delay:
               type: integer
-              description: Delay in minutes before triggering the alert
+              description: Delay in minutes before triggering the alert. If missing, defaults to 0. If value was already existing, it will not be changed.
             timestamp:
               type: integer
               format: int64
