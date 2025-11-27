@@ -8,9 +8,5 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up node
-        uses: actions/setup-node@v4
-      - name: Install Redocly CLI
-        run: npm install -g @redocly/cli@latest
       - name: Run linting
-        run: redocly lint userapi/openapi.yaml --format=github-actions
+        run: npx -y @redocly/cli@latest lint userapi/openapi.yaml --format=github-actions
