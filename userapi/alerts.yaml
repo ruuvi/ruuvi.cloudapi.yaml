@@ -248,7 +248,7 @@ get:
             unauthorized:
               value:
                 result: "error"
-                error: "Unauthorized"
+                error: "UNAUTHORIZED"
                 code: "ER_UNAUTHORIZED"
 
     '403':
