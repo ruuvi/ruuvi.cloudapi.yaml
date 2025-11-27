@@ -1,0 +1,9 @@
+type: object
+required:
+  - sensors
+properties:
+  sensors:
+    type: array
+    description: List of sensors with their alerts
+    items:
+      $ref: './SensorWithAlerts.yaml'

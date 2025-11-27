@@ -1,0 +1,23 @@
+type: string
+enum: 
+  - temperature
+  - pressure
+  - humidity
+  - signal
+  - movement
+  - battery
+  - offline
+  - luminosity
+  - voc
+  - co2
+  - sound
+  - soundInstant
+  - soundAverage
+  - soundPeak
+  - nox
+  - pm10
+  - pm25
+  - pm40
+  - pm100
+  - aqi
+description: Type of alert condition

@@ -1,0 +1,8 @@
+type: object
+required:
+  - action
+properties:
+  action:
+    type: string
+    description: Result of the alert operation
+    example: "success"
