@@ -190,7 +190,7 @@ get:
                 data:
                   sensors:
                     - owner: "otso+docs@ruuvi.com"
-                      sensor: "AA:BB:CC:DD:EE:FF"
+                      sensor: "C5:2A:E7:4D:CE:7F"
                       name: "Ruuvi EEFF"
                       picture: "ruuvi_eeff.jpg"
                       public: false
