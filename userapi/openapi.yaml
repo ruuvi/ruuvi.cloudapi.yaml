@@ -18,6 +18,8 @@ servers:
 tags:
   - name: Air-Firmware
     description: Ruuvi Air firmware update information
+  - name: Alerts
+    description: Alert management for sensors
   - name: Register-User
     description: User registration and verification
   - name: Sensor-Settings
@@ -29,6 +31,8 @@ tags:
 paths:
   /air_firmwareupdate:
     $ref: 'air-firmware.yaml'
+  /alerts:
+    $ref: 'alerts.yaml'
   /push-register:
     $ref: 'push-register.yaml'
   /register: 
@@ -47,6 +51,16 @@ components:
   schemas:
     AirFirmwareResponse:
       $ref: '../components/schemas/AirFirmwareResponse.yaml'
+    Alert:
+      $ref: '../components/schemas/Alert.yaml'
+    AlertActionResult:
+      $ref: '../components/schemas/AlertActionResult.yaml'
+    AlertsResponse:
+      $ref: '../components/schemas/AlertsResponse.yaml'
+    AlertType:
+      $ref: '../components/schemas/AlertType.yaml'
+    SensorWithAlerts:
+      $ref: '../components/schemas/SensorWithAlerts.yaml'
     Error:
       $ref: '../components/schemas/Error.yaml'
     registerResult:

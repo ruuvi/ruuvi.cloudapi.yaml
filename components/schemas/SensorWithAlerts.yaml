@@ -1,0 +1,14 @@
+allOf:
+  - $ref: './SensorBase.yaml'
+  - type: object
+    required:
+      - subscription
+      - alerts
+    properties:
+      subscription:
+        $ref: './Subscription.yaml'
+      alerts:
+        type: array
+        description: List of alerts configured for this sensor
+        items:
+          $ref: './Alert.yaml'

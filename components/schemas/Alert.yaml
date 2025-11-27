@@ -1,0 +1,54 @@
+type: object
+required:
+  - type
+  - min
+  - max
+  - counter
+  - delay
+  - enabled
+  - description
+  - triggered
+properties:
+  type:
+    $ref: './AlertType.yaml'
+  min:
+    type: number
+    format: double
+    description: Lower limit for the alert condition
+    example: -40
+  max:
+    type: number
+    format: double
+    description: Upper limit for the alert condition
+    example: 85
+  counter:
+    type: integer
+    description: Movement counter threshold (relevant for movement type alerts)
+    example: 0
+  delay:
+    type: integer
+    description: Delay in minutes before triggering the alert
+    example: 0
+  enabled:
+    type: boolean
+    description: Whether the alert is active
+    example: true
+  description:
+    type: string
+    description: User-provided description of the alert
+    example: ""
+  triggered:
+    type: boolean
+    description: Whether the alert has been triggered
+    example: false
+  triggeredAt:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp when the alert was triggered
+    nullable: true
+    example: "2024-05-16T08:05:57.000Z"
+  lastUpdated:
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds when the alert was last updated
+    example: 1732187742

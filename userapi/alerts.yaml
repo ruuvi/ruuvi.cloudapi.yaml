@@ -1,0 +1,265 @@
+post: 
+  summary: Create and update Alerts
+  description: |
+    Sets an alert on a sensor for a given metric. The alert condition is tested
+    against the absolute value received from the sensors in conjunction with the user set
+    offsets for that particular sensor.
+  operationId: setAlert
+  tags:
+    - Alerts
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - sensor
+            - type
+            - enabled
+          properties:
+            sensor:
+              type: string
+              description: MAC address of the sensor (e.g. `C5:2A:E7:4D:CE:7F`)
+              pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+            type:
+              $ref: '../components/schemas/AlertType.yaml'
+            enabled:
+              type: boolean
+              description: Whether the alert is active
+            min:
+              type: number
+              format: double
+              description: Lower limit for the alert condition (optional)
+            max:
+              type: number
+              format: double
+              description: Upper limit for the alert condition (optional)
+            counter:
+              type: integer
+              description: Movement counter threshold (relevant for movement type alerts)
+            description:
+              type: string
+              description: User-provided description of the alert
+            delay:
+              type: integer
+              description: Delay in minutes before triggering the alert
+            timestamp:
+              type: integer
+              format: int64
+              description: Optional epoch timestamp for the alert. If missing, it is assumed to be the current time.
+        examples:
+          temperature:
+            value:
+              sensor: "C5:2A:E7:4D:CE:7F"
+              type: "temperature"
+              enabled: true
+              min: 18.5
+              max: 25.0
+              description: "Temperature alert for greenhouse"
+              delay: 15
+          movement:
+            value:
+              sensor: "C5:2A:E7:4D:CE:7F"
+              type: "movement"
+              enabled: true
+              counter: 10
+              description: "Movement detected"
+          offline:
+            value:
+              sensor: "C5:2A:E7:4D:CE:7F"
+              type: "offline"
+              enabled: true
+              delay: 30
+              description: "Sensor offline alert"
+
+  responses:
+    '200':
+      description: Alert stored or updated successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../components/schemas/AlertActionResult.yaml'
+          examples:
+            success:
+              value:
+                result: success
+                data:
+                  action: "success"
+
+    '400':
+      description: >
+        BAD REQUEST - Missing or malformed fields  
+        (`sensor`, `type`, or `enabled` missing; sensor not MAC address; type not valid)
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "Invalid or missing fields"
+                code: "ER_INVALID_ARGUMENT"
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"
+
+    '403':
+      description: FORBIDDEN - User does not have permission to set alerts for this sensor
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            forbidden:
+              value:
+                result: "error"
+                error: "Forbidden"
+                code: "ER_FORBIDDEN"
+
+    '409':
+      description: CONFLICT - Alert with same or newer timestamp already exists
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            conflict:
+              value:
+                result: "error"
+                error: "Cloud has fresher data than timestamp"
+                code: "ER_CONFLICT"
+
+get: 
+  summary: Get alerts
+  operationId: getAlerts
+  tags:
+    - Alerts
+  security:
+    - bearerAuth: []
+  description: >
+    Fetches alerts for all sensors user has access to or a single sensor if optional
+    parameter is provided.
+  parameters:
+    - in: query
+      name: sensor
+      required: false
+      description: >
+        Optional filter to get alerts for a single sensor by its MAC address (e.g. C5:2A:E7:4D:CE:7F).
+      schema:
+        type: string
+        pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+        example: "C5:2A:E7:4D:CE:7F"
+
+  responses:
+    '200':
+      description: Alerts fetched successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '../components/schemas/AlertsResponse.yaml'
+          examples:
+            success:
+              value:
+                result: success
+                data:
+                  sensors:
+                    - owner: "otso+docs@ruuvi.com"
+                      sensor: "AA:BB:CC:DD:EE:FF"
+                      name: "Ruuvi EEFF"
+                      picture: "ruuvi_eeff.jpg"
+                      public: false
+                      canShare: true
+                      offsetTemperature: 0
+                      offsetHumidity: 0
+                      offsetPressure: 0
+                      customProfile: false
+                      lastUpdated: 1715845699
+                      subscription:
+                        subscriptionName: "Pro"
+                        maxClaims: 25
+                        maxShares: 40
+                        maxSharesPerSensor: 10
+                        maxHistoryDays: 731
+                        maxResolutionMinutes: 1
+                        emailAlertAllowed: true
+                        pushAlertAllowed: true
+                        telegramAlertAllowed: true
+                        delayedAlertAllowed: false
+                        pdfExportAllowed: false
+                        offlineAlertAllowed: true
+                        isActive: true
+                        endAt: "2025-12-05T06:15:43.000Z"
+                        lastUpdated: 1701756942
+                      alerts:
+                        - type: "offline"
+                          min: 0
+                          max: 900
+                          counter: 0
+                          delay: 0
+                          enabled: true
+                          description: ""
+                          triggered: true
+                          triggeredAt: "2025-10-26T05:37:13.000Z"
+                          lastUpdated: 1729918633
+                        - type: "temperature"
+                          min: -40
+                          max: 85
+                          counter: 0
+                          delay: 0
+                          enabled: false
+                          description: ""
+                          triggered: false
+                          triggeredAt: "2024-05-16T08:05:57.000Z"
+                          lastUpdated: 1715845557
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"
+
+    '403':
+      description: FORBIDDEN - User does not have access to the requested sensor
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            forbidden:
+              value:
+                result: "error"
+                error: "Forbidden"
+                code: "ER_FORBIDDEN"
