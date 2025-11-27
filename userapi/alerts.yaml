@@ -2,7 +2,7 @@ post:
   summary: Create and update Alerts
   description: |
     Sets an alert on a sensor for a given metric. The alert condition is tested
-    against the absolute value received from the sensors in conjunction with the user set
+    against the absolute value received from the sensors in conjunction with the user-set
     offsets for that particular sensor.
   operationId: setAlert
   tags:
