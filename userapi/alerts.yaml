@@ -156,7 +156,7 @@ get:
   security:
     - bearerAuth: []
   description: >
-    Fetches alerts for all sensors user has access to or a single sensor if optional
+    Fetches alerts for all sensors the user has access to or a single sensor if an optional
     parameter is provided.
   parameters:
     - in: query
