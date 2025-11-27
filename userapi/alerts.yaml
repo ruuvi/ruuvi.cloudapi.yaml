@@ -261,5 +261,5 @@ get:
             forbidden:
               value:
                 result: "error"
-                error: "Forbidden"
+                error: "FORBIDDEN"
                 code: "ER_FORBIDDEN"
