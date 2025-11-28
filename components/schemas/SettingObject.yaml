@@ -6,14 +6,16 @@ description: |
   - Up to 500 setting pairs (1000 total properties including timestamps).
   - Setting values are strings (max 1000 chars), timestamp fields are integers (epoch seconds).
 maxProperties: 1000
-additionalProperties:
-  oneOf:
-    - type: string
-      maxLength: 1000
-      description: Setting value
-    - type: integer
-      format: int64
-      description: Epoch timestamp in seconds for when the setting was last updated
+patternProperties:
+  "^(?!.*_lastUpdated$).+$":
+    type: string
+    maxLength: 1000
+    description: Setting value
+  "^.+_lastUpdated$":
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds for when the setting was last updated
+additionalProperties: false
 example:
   description: '"Fridge thermometer"'
   description_lastUpdated: 1732187742
