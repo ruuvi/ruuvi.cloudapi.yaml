@@ -30,17 +30,17 @@ tags:
 
 paths:
   /air_firmwareupdate:
-    $ref: 'air-firmware.yaml'
+    $ref: './air-firmware.yaml'
   /alerts:
-    $ref: 'alerts.yaml'
+    $ref: './alerts.yaml'
   /push-register:
-    $ref: 'push-register.yaml'
+    $ref: './push-register.yaml'
   /register: 
-    $ref: 'register.yaml'
+    $ref: './register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
   /verify: 
-    $ref: 'verify.yaml'
+    $ref: './verify.yaml'
   
 
 components:
