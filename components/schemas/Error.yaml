@@ -20,7 +20,6 @@ properties:
     example: "ER_CONFLICT"
 
   sub_code:
-    type: string
-    nullable: true
+    type: ['string', 'null']
     description: Optional secondary code useful for client logic
     example: "ER_OLD_ENTRY"

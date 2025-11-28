@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Ruuvi Cloud - User API
   description: Ruuvi Cloud user facing API. Everything you need to build your own front-end to Ruuvi Cloud.
@@ -30,17 +30,17 @@ tags:
 
 paths:
   /air_firmwareupdate:
-    $ref: 'air-firmware.yaml'
+    $ref: './air-firmware.yaml'
   /alerts:
-    $ref: 'alerts.yaml'
+    $ref: './alerts.yaml'
   /push-register:
-    $ref: 'push-register.yaml'
+    $ref: './push-register.yaml'
   /register: 
-    $ref: 'register.yaml'
+    $ref: './register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
   /verify: 
-    $ref: 'verify.yaml'
+    $ref: './verify.yaml'
   
 
 components:
@@ -48,36 +48,3 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-  schemas:
-    AirFirmwareResponse:
-      $ref: '../components/schemas/AirFirmwareResponse.yaml'
-    Alert:
-      $ref: '../components/schemas/Alert.yaml'
-    AlertActionResult:
-      $ref: '../components/schemas/AlertActionResult.yaml'
-    AlertsResponse:
-      $ref: '../components/schemas/AlertsResponse.yaml'
-    AlertType:
-      $ref: '../components/schemas/AlertType.yaml'
-    SensorWithAlerts:
-      $ref: '../components/schemas/SensorWithAlerts.yaml'
-    Error:
-      $ref: '../components/schemas/Error.yaml'
-    registerResult:
-      $ref: '../components/schemas/registerResult.yaml'
-    verifyResult:
-      $ref: '../components/schemas/verifyResult.yaml'
-    SensorBase:
-      $ref: '../components/schemas/SensorBase.yaml'
-    SettingGetResult:
-      $ref: '../components/schemas/SettingGetResult.yaml'
-    SettingObject:
-      $ref: '../components/schemas/SettingObject.yaml'
-    Settings:
-      $ref: '../components/schemas/Settings.yaml'
-    SettingSetResult:
-      $ref: '../components/schemas/SettingSetResult.yaml'
-    Subscription:
-      $ref: '../components/schemas/Subscription.yaml'
-    Success:
-      $ref: '../components/schemas/Success.yaml'
