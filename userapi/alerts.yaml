@@ -18,7 +18,6 @@ post:
           required:
             - sensor
             - type
-            - enabled
           properties:
             sensor:
               type: string
@@ -28,7 +27,7 @@ post:
               $ref: '../components/schemas/AlertType.yaml'
             enabled:
               type: boolean
-              description: Whether the alert is active
+              description: Whether the alert is active. If missing, defaults to false. If value was already existing, it will not be changed.
             min:
               type: number
               format: double
