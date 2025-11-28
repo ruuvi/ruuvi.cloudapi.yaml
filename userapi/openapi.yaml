@@ -48,36 +48,3 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-  schemas:
-    AirFirmwareResponse:
-      $ref: '../components/schemas/AirFirmwareResponse.yaml'
-    Alert:
-      $ref: '../components/schemas/Alert.yaml'
-    AlertActionResult:
-      $ref: '../components/schemas/AlertActionResult.yaml'
-    AlertsResponse:
-      $ref: '../components/schemas/AlertsResponse.yaml'
-    AlertType:
-      $ref: '../components/schemas/AlertType.yaml'
-    SensorWithAlerts:
-      $ref: '../components/schemas/SensorWithAlerts.yaml'
-    Error:
-      $ref: '../components/schemas/Error.yaml'
-    registerResult:
-      $ref: '../components/schemas/registerResult.yaml'
-    verifyResult:
-      $ref: '../components/schemas/verifyResult.yaml'
-    SensorBase:
-      $ref: '../components/schemas/SensorBase.yaml'
-    SettingGetResult:
-      $ref: '../components/schemas/SettingGetResult.yaml'
-    SettingObject:
-      $ref: '../components/schemas/SettingObject.yaml'
-    Settings:
-      $ref: '../components/schemas/Settings.yaml'
-    SettingSetResult:
-      $ref: '../components/schemas/SettingSetResult.yaml'
-    Subscription:
-      $ref: '../components/schemas/Subscription.yaml'
-    Success:
-      $ref: '../components/schemas/Success.yaml'
