@@ -50,6 +50,10 @@ function downgrade(obj) {
       if (value.includes('null')) {
         result['nullable'] = true;
       }
+      if (types.length === 0) {
+        // Skip type field if only null was present
+        continue;
+      }
       result['type'] = types.length === 1 ? types[0] : types;
       continue;
     }
