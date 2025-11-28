@@ -17,12 +17,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Bundle OpenAPI (User API)
         run: |
-          mkdir -p userapi
           npx -y @redocly/cli@latest bundle \
             userapi/openapi.yaml \
             -o userapi/bundle.yaml
+
+      - name: Downgrade to OAS 3.0 for GitBook
+        run: |
+          npm install js-yaml
+          node scripts/downgrade-to-oas30.js userapi/bundle.yaml userapi/bundle-oas30.yaml
 
       - name: Upload bundled spec as artifact
         uses: actions/upload-artifact@v4
@@ -35,4 +44,4 @@ jobs:
           npx -y @gitbook/cli@latest openapi publish \
             --spec "$GITBOOK_SPEC_NAME" \
             --organization "$GITBOOK_ORGANIZATION_ID" \
-            userapi/bundle.yaml
+            userapi/bundle-oas30.yaml
