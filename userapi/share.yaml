@@ -1,0 +1,138 @@
+post: 
+  summary: Share a sensor with another user
+  description: |
+    Shares your sensor data with another user via their e-mail address. 
+    This grants them access to the sensor data via the get endpoint.
+    
+    An notification e-mail will be sent to the target user about the new share.
+    If the target user does not exist yet, an invitation to create an account 
+    will be sent and they will gain access upon sign up.
+
+    The features share receiver gets are based on your account type - if you have
+    a Pro account, the share receiver also gets Pro features for this sensor.
+  operationId: shareSensor
+  tags:
+    - Share
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - sensor
+            - user
+          properties:
+            sensor:
+              type: string
+              description: MAC address of the sensor to share (e.g. `C6:F1:E7:D3:DA:11`)
+              pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+            user:
+              type: string
+              format: email
+              description: E-mail address of the user to share the sensor with
+        examples:
+          basic:
+            value:
+              sensor: "C6:F1:E7:D3:DA:11"
+              user: "friend@example.com"
+
+  responses:
+    '200':
+      description: Sensor shared successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../components/schemas/ShareResult.yaml'
+          examples:
+            shared_existing_user:
+              value:
+                result: success
+                data:
+                  sensor: "C6:F1:E7:D3:DA:11"
+                  invited: false
+            shared_new_user:
+              value:
+                result: success
+                data:
+                  sensor: "C6:F1:E7:D3:DA:11"
+                  invited: true
+
+    '400':
+      description: >
+        INVALID - Missing or malformed fields  
+        (`sensor` or `user` missing; sensor not valid MAC address; user not valid email)
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid_sensor:
+              value:
+                result: "error"
+                error: "Sensor must be MAC address"
+                code: "ER_INVALID_ARGUMENT"
+            invalid_email:
+              value:
+                result: "error"
+                error: "Invalid email address"
+                code: "ER_INVALID_ARGUMENT"
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or expired
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"
+
+    '403':
+      description: FORBIDDEN - User does not own this sensor or cannot share it
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            forbidden:
+              value:
+                result: "error"
+                error: "Forbidden"
+                code: "ER_FORBIDDEN"
+
+    '409':
+      description: CONFLICT - Sensor is already shared to this user
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            conflict:
+              value:
+                result: "error"
+                error: "Sensor already shared to user"
+                code: "ER_CONFLICT"
+
+    '500':
+      description: INTERNAL SERVER ERROR - Unexpected error occurred
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            internal_error:
+              value:
+                result: "error"
+                error: "Internal server error"
+                code: "ER_INTERNAL"

@@ -1,0 +1,15 @@
+type: object
+required:
+  - sensor
+properties:
+  sensor:
+    type: string
+    description: MAC address of the shared sensor
+    pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+    example: "C6:F1:E7:D3:DA:11"
+  invited:
+    type: boolean
+    description: >
+      True if the target user did not exist and an invitation email was sent.
+      False if the target user already has an account.
+    example: true

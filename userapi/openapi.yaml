@@ -26,6 +26,8 @@ tags:
     description: Sensor settings management
   - name: Push-Notifications
     description: Push notification token management
+  - name: Share
+    description: Sensor sharing and unsharing
 
 
 paths:
@@ -39,6 +41,10 @@ paths:
     $ref: './register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
+  /share:
+    $ref: './share.yaml'
+  /unshare:
+    $ref: './unshare.yaml'
   /verify: 
     $ref: './verify.yaml'
   
