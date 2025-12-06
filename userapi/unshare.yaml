@@ -1,0 +1,128 @@
+post: 
+  summary: Unshare a sensor from a user
+  description: |
+    Revokes access to the sensor from a target user.
+    
+    This can also be used to remove sensors that have been shared with your own user
+    (i.e., declining a share from someone else).
+  operationId: unshareSensor
+  tags:
+    - Share
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - sensor
+          properties:
+            sensor:
+              type: string
+              description: MAC address of the sensor to unshare (e.g. `C6:F1:E7:D3:DA:11`)
+              pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+            user:
+              type: string
+              format: email
+              description: |
+                E-mail address of the user to revoke access from.
+                If omitted, the share is removed from the authenticated user's account
+                (useful for declining a share someone else made to you).
+        examples:
+          unshare_from_other:
+            summary: Unshare sensor from another user
+            value:
+              sensor: "C6:F1:E7:D3:DA:11"
+              user: "friend@example.com"
+          remove_shared_to_me:
+            summary: Remove a sensor shared to me
+            value:
+              sensor: "C6:F1:E7:D3:DA:11"
+
+  responses:
+    '200':
+      description: Sensor unshared successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    description: Empty object on success
+          examples:
+            success:
+              value:
+                result: success
+                data: {}
+
+    '400':
+      description: >
+        INVALID - Missing or malformed fields  
+        (`sensor` missing or not valid MAC address)
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "Invalid or missing fields"
+                code: "ER_INVALID_ARGUMENT"
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or expired
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "UNAUTHORIZED"
+                code: "ER_UNAUTHORIZED"
+
+    '403':
+      description: FORBIDDEN - User does not have permission to unshare this sensor
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            forbidden:
+              value:
+                result: "error"
+                error: "FORBIDDEN"
+                code: "ER_FORBIDDEN"
+
+    '404':
+      description: NOT FOUND - Shared sensor or target user not found
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            not_found:
+              value:
+                result: "error"
+                error: "NOT FOUND"
+                code: "ER_NOT_FOUND"
+
+    '500':
+      description: INTERNAL SERVER ERROR - Unexpected error occurred
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            internal_error:
+              value:
+                result: "error"
+                error: "Internal server error"
+                code: "ER_INTERNAL"
