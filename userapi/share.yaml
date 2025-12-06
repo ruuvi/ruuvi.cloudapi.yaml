@@ -4,7 +4,7 @@ post:
     Shares your sensor data with another user via their e-mail address. 
     This grants them access to the sensor data via the get endpoint.
     
-    An notification e-mail will be sent to the target user about the new share.
+    A notification e-mail will be sent to the target user about the new share.
     If the target user does not exist yet, an invitation to create an account 
     will be sent and they will gain access upon sign up.
 
@@ -95,7 +95,7 @@ post:
             unauthorized:
               value:
                 result: "error"
-                error: "Unauthorized"
+                error: "UNAUTHORIZED"
                 code: "ER_UNAUTHORIZED"
 
     '403':
@@ -108,7 +108,7 @@ post:
             forbidden:
               value:
                 result: "error"
-                error: "Forbidden"
+                error: "FORBIDDEN"
                 code: "ER_FORBIDDEN"
 
     '409':
