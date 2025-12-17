@@ -43,9 +43,9 @@ properties:
     description: Whether the alert has been triggered
     example: false
   triggeredAt:
-    type: ['string', 'null']
+    type: string
     format: date-time
-    description: ISO 8601 timestamp when the alert was triggered
+    description: ISO 8601 timestamp when the alert was triggered. '1970-01-01T00:00:00.000Z' indicates the alert has never been triggered
     example: "2024-05-16T08:05:57.000Z"
   lastUpdated:
     type: integer
