@@ -3,6 +3,8 @@ enum:
   - temperature
   - pressure
   - humidity
+  - humidityAbsolute
+  - dewPoint
   - signal
   - movement
   - battery
