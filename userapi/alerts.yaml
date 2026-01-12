@@ -213,6 +213,8 @@ get:
                         pdfExportAllowed: false
                         offlineAlertAllowed: true
                         isActive: true
+                        startTime: 1670216143
+                        endTime: 1733288143
                         endAt: "2025-12-05T06:15:43.000Z"
                         lastUpdated: 1701756942
                       alerts:
