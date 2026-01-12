@@ -47,6 +47,8 @@ get:
                       pdfExportAllowed: true
                       offlineAlertAllowed: true
                       isActive: true
+                      startTime: 1721815542
+                      endTime: 1753351542
                       endAt: "2026-07-24T10:35:42.000Z"
                       lastUpdated: 1732187742
                     - subscriptionName: "DEV"
@@ -62,6 +64,8 @@ get:
                       pdfExportAllowed: false
                       offlineAlertAllowed: false
                       isActive: false
+                      startTime: 1673435292
+                      endTime: 1673608092
                       endAt: "2025-01-15T12:00:00.000Z"
                       lastUpdated: 1673608092
 
