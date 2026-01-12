@@ -13,6 +13,8 @@ required:
   - pdfExportAllowed
   - offlineAlertAllowed
   - isActive
+  - startTime
+  - endTime
   - endAt
   - lastUpdated
 properties:
@@ -67,6 +69,18 @@ properties:
   isActive:
     type: boolean
     example: true
+
+  startTime:
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds when the subscription started.
+    example: 1673435374
+
+  endTime:
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds when the subscription ends.
+    example: 1673608174
 
   endAt:
     type: string
