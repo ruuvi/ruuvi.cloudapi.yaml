@@ -28,6 +28,8 @@ tags:
     description: Push notification token management
   - name: Share
     description: Sensor sharing and unsharing
+  - name: Subscription
+    description: User subscription management
 
 
 paths:
@@ -43,6 +45,8 @@ paths:
     $ref: './sensor-settings.yaml'
   /share:
     $ref: './share.yaml'
+  /subscription:
+    $ref: './subscription.yaml'
   /unshare:
     $ref: './unshare.yaml'
   /verify: 
