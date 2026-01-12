@@ -1,0 +1,92 @@
+get:
+  summary: Get subscription history
+  description: |
+    Returns an array of JSON objects detailing the subscriptions the user has had.
+    The active subscription (if any) will have `isActive: true`.
+  operationId: getSubscription
+  tags:
+    - Subscription
+  security:
+    - bearerAuth: []
+
+  responses:
+    '200':
+      description: Subscription history retrieved successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - subscriptions
+                    properties:
+                      subscriptions:
+                        type: array
+                        items:
+                          $ref: '../components/schemas/Subscription.yaml'
+          examples:
+            success:
+              value:
+                result: success
+                data:
+                  subscriptions:
+                    - subscriptionName: "DEV"
+                      maxClaims: 25
+                      maxShares: 40
+                      maxSharesPerSensor: 5
+                      maxHistoryDays: 720
+                      maxResolutionMinutes: 1
+                      emailAlertAllowed: true
+                      pushAlertAllowed: true
+                      telegramAlertAllowed: true
+                      delayedAlertAllowed: true
+                      pdfExportAllowed: true
+                      offlineAlertAllowed: true
+                      isActive: true
+                      endAt: "2026-07-24T10:35:42.000Z"
+                      lastUpdated: 1732187742
+                    - subscriptionName: "DEV"
+                      maxClaims: 25
+                      maxShares: 40
+                      maxSharesPerSensor: 5
+                      maxHistoryDays: 720
+                      maxResolutionMinutes: 1
+                      emailAlertAllowed: true
+                      pushAlertAllowed: true
+                      telegramAlertAllowed: false
+                      delayedAlertAllowed: false
+                      pdfExportAllowed: false
+                      offlineAlertAllowed: false
+                      isActive: false
+                      endAt: "2025-01-15T12:00:00.000Z"
+                      lastUpdated: 1673608092
+
+    '400':
+      description: BAD REQUEST - Malformed request
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "Invalid request"
+                code: "ER_INVALID_ARGUMENT"
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"
