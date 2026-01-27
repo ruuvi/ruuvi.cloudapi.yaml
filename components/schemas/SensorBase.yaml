@@ -61,5 +61,5 @@ properties:
     type: integer
     format: int64
     description: >
-      Epoch timestamp in seconds when the sensor profile was last updated.
+      Epoch timestamp in seconds when the sensor or its profile was last updated (whichever is more recent).
     example: 1732187742
