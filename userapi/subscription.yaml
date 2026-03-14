@@ -119,11 +119,11 @@ post:
             code:
               type: string
               description: Subscription claim code
-              example: "ABCD-EFGH-IJKL"
+              example: "BCDF-FGHJ"
         examples:
           basic:
             value:
-              code: "ABCD-EFGH-IJKL"
+              code: "BCDF-FGHJ"
 
   responses:
     '200':
