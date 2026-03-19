@@ -94,3 +94,119 @@ get:
                 result: "error"
                 error: "Unauthorized"
                 code: "ER_UNAUTHORIZED"
+
+post:
+  summary: Claim a subscription by a code
+  description: |
+    Applies a new subscription to the authenticated user immediately.
+    Parameters are passed as JSON in the request body.
+    The success response contains full subscription history,
+    with the active subscription first in the `subscriptions` array.
+  operationId: claimSubscriptionByCode
+  tags:
+    - Subscription
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              type: string
+              description: Subscription claim code
+              example: "BCDF-FGHJ"
+        examples:
+          basic:
+            value:
+              code: "BCDF-FGHJ"
+
+  responses:
+    '200':
+      description: Subscription was applied successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - subscriptions
+                    properties:
+                      subscriptions:
+                        type: array
+                        items:
+                          $ref: '../components/schemas/Subscription.yaml'
+          examples:
+            success:
+              value:
+                result: success
+                data:
+                  subscriptions:
+                    - subscriptionName: "DEV"
+                      maxClaims: 25
+                      maxShares: 40
+                      maxSharesPerSensor: 5
+                      maxHistoryDays: 720
+                      maxResolutionMinutes: 1
+                      emailAlertAllowed: true
+                      pushAlertAllowed: true
+                      telegramAlertAllowed: true
+                      delayedAlertAllowed: true
+                      pdfExportAllowed: true
+                      offlineAlertAllowed: true
+                      isActive: true
+                      startTime: 1721815542
+                      endTime: 1753351542
+                      endAt: "2026-07-24T10:35:42.000Z"
+                      lastUpdated: 1732187742
+                    - subscriptionName: "DEV"
+                      maxClaims: 25
+                      maxShares: 40
+                      maxSharesPerSensor: 5
+                      maxHistoryDays: 720
+                      maxResolutionMinutes: 1
+                      emailAlertAllowed: true
+                      pushAlertAllowed: true
+                      telegramAlertAllowed: false
+                      delayedAlertAllowed: false
+                      pdfExportAllowed: false
+                      offlineAlertAllowed: false
+                      isActive: false
+                      startTime: 1673435292
+                      endTime: 1673608092
+                      endAt: "2025-01-15T12:00:00.000Z"
+                      lastUpdated: 1673608092
+
+    '400':
+      description: BAD REQUEST - Missing or malformed fields
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            missing_code:
+              value:
+                result: "error"
+                error: "Missing code"
+                code: "ER_INVALID_ARGUMENT"
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"
