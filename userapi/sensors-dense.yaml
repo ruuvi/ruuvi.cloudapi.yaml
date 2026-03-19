@@ -138,6 +138,11 @@ get:
                                     Present when `alerts=true`.
                                   items:
                                     $ref: '../components/schemas/Alert.yaml'
+                                settings:
+                                  description: >
+                                    Sensor-specific settings as flattened key-value pairs.
+                                    Present when `settings=true`.
+                                  $ref: '../components/schemas/SettingObject.yaml'
           examples:
             minimal:
               summary: Default response (calibration data only)
@@ -156,23 +161,23 @@ get:
                       offsetPressure: 0
                       customProfile: false
                       lastUpdated: 1732187742
-            with_measurements_and_alerts:
-              summary: Response with measurements and alerts
+            with_all_fields:
+              summary: Response with measurements, alerts, sharedTo, and settings
               value:
                 result: success
                 data:
                   sensors:
-                    - sensor: "C6:F1:E7:D3:DA:11"
-                      owner: "otso@ruuvi.com"
-                      name: "Sauna"
-                      picture: ""
+                    - owner: "otso@ruuvi.com"
+                      sensor: "C2:07:FC:16:45:3B"
+                      name: "Saarvahtra Office 453B"
+                      picture: "https://prod-sensor-profile-pictures.s3.eu-central-1.amazonaws.com/ed9a7169-65e4-4aac-853b-858d061a615e.jpg"
                       public: false
                       canShare: true
                       offsetTemperature: 0
                       offsetHumidity: 0
                       offsetPressure: 0
                       customProfile: false
-                      lastUpdated: 1732187742
+                      lastUpdated: 1697119564
                       subscription:
                         subscriptionName: "Business Standard"
                         maxClaims: 50
@@ -187,27 +192,31 @@ get:
                         pdfExportAllowed: true
                         offlineAlertAllowed: true
                         isActive: true
-                        startTime: 1721815542
-                        endTime: 1753351542
+                        startTime: 1748506803
+                        endTime: 1784889342
                         endAt: "2026-07-24T10:35:42.000Z"
-                        lastUpdated: 1732187742
+                        lastUpdated: 1748506803
                       measurements:
-                        - gwmac: "AA:BB:CC:DD:EE:FF"
-                          coordinates: "N/A"
-                          rssi: -65
-                          timestamp: 1732187742
-                          data: "0201060303AAFE1516AAFE10F7027275757669636F6D2F61626364"
+                        - coordinates: "N/A"
+                          data: "0201061BFF9904050EA24339C9120024FFE003ECA076A44E37C207FC16453B"
+                          gwmac: "F9:15:8F:92:D8:69"
+                          timestamp: 1773923890
+                          rssi: -47
                       alerts:
-                        - type: temperature
-                          min: -40
-                          max: 85
+                        - type: offline
+                          min: 0
+                          max: 900
                           counter: 0
                           delay: 0
                           enabled: true
                           description: ""
                           triggered: false
-                          triggeredAt: "1970-01-01T00:00:00.000Z"
-                          lastUpdated: 1732187742
+                          triggeredAt: "2026-02-06T07:29:08.000Z"
+                          lastUpdated: 1714289920
+                      sharedTo: []
+                      settings:
+                        Test: "Testiasetus"
+                        Test_lastUpdated: 1764760337
 
     '401':
       description: UNAUTHORIZED - Auth token missing or invalid
