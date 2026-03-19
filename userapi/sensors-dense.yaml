@@ -126,10 +126,11 @@ get:
                                   items:
                                     $ref: '../components/schemas/SensorMeasurement.yaml'
                                 subscription:
-                                  description: >
-                                    Active subscription details for this sensor.
-                                    Present when `measurements=true`.
-                                  $ref: '../components/schemas/Subscription.yaml'
+                                  allOf:
+                                    - $ref: '../components/schemas/Subscription.yaml'
+                                    - description: >
+                                        Active subscription details for this sensor.
+                                        Present when `measurements=true`.
                                 alerts:
                                   type: array
                                   description: >
