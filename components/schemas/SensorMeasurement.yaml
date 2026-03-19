@@ -9,7 +9,8 @@ properties:
   gwmac:
     type: string
     description: MAC address of the gateway that received this measurement
-    example: "C6:F1:E7:D3:DA:11"
+    pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+    example: "AA:BB:CC:DD:EE:FF"
   coordinates:
     type: string
     description: GPS coordinates of the gateway, or "N/A" if unavailable
