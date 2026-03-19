@@ -139,10 +139,11 @@ get:
                                   items:
                                     $ref: '../components/schemas/Alert.yaml'
                                 settings:
-                                  description: >
-                                    Sensor-specific settings as flattened key-value pairs.
-                                    Present when `settings=true`.
-                                  $ref: '../components/schemas/SettingObject.yaml'
+                                  allOf:
+                                    - $ref: '../components/schemas/SettingObject.yaml'
+                                    - description: >
+                                        Sensor-specific settings as flattened key-value pairs.
+                                        Present when `settings=true`.
           examples:
             minimal:
               summary: Default response (calibration data only)
