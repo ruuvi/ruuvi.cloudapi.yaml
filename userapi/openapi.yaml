@@ -26,6 +26,8 @@ tags:
     description: Sensor settings management
   - name: Push-Notifications
     description: Push notification token management
+  - name: Sensors
+    description: Sensor data and metadata retrieval
   - name: Share
     description: Sensor sharing and unsharing
   - name: Subscription
@@ -43,6 +45,8 @@ paths:
     $ref: './register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
+  /sensors-dense:
+    $ref: './sensors-dense.yaml'
   /share:
     $ref: './share.yaml'
   /subscription:

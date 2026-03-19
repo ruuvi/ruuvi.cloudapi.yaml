@@ -1,0 +1,246 @@
+get:
+  summary: Get sensors with calibration data, latest measurements, and alert settings
+  description: |
+    Fetches the list of claimed and shared sensors with calibration data, sensor
+    last measurement, subscription type and alert settings.
+
+    By default the endpoint returns only the claimed sensors with calibration
+    data. Optional query parameters must be passed to get shared sensors,
+    last measurements, and alert settings.
+  operationId: getSensorsDense
+  tags:
+    - Sensors
+  security:
+    - bearerAuth: []
+
+  parameters:
+    - name: sensor
+      in: query
+      required: false
+      schema:
+        type: string
+        pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+      description: Optionally filter results to a single sensor by MAC address
+
+    - name: sharedToOthers
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: >
+        If true, each sensor object includes the list of users it is shared to.
+        Returns an empty list for sensors the caller does not own.
+
+    - name: sharedToMe
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: >
+        If true, sensors that are shared to the logged-in user are included
+        in the response alongside sensors claimed by the user.
+
+    - name: measurements
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: >
+        If true, the latest measurement for each sensor is included.
+        Also returns the active subscription details for each sensor.
+
+    - name: alerts
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: >
+        If true, the alert settings for each sensor are included.
+
+    - name: settings
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: >
+        If true, sensor-specific settings are included for each sensor.
+
+    - name: mode
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [dense, sparse, mixed]
+        default: mixed
+      description: >
+        Fetch mode for measurement data. `dense` returns highest data density
+        for a limited time range. `sparse` returns downsampled data with no
+        time-range limit. `mixed` returns all dense data available and fills
+        the rest with sparse data. Default: `mixed`.
+
+  responses:
+    '200':
+      description: Sensors retrieved successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - sensors
+                    properties:
+                      sensors:
+                        type: array
+                        description: List of sensors the caller has claimed, and optionally sensors shared to them
+                        items:
+                          allOf:
+                            - $ref: '../components/schemas/SensorBase.yaml'
+                            - type: object
+                              properties:
+                                owner:
+                                  type: string
+                                  format: email
+                                  description: >
+                                    Email address of the sensor owner.
+                                    Partially masked when the sensor is public
+                                    and the caller does not own it.
+                                  example: "o***@ruuvi.com"
+                                sharedTo:
+                                  type: array
+                                  description: >
+                                    Email addresses of users this sensor is
+                                    shared to. Present when `sharedToOthers=true`.
+                                  items:
+                                    type: string
+                                    format: email
+                                    example: "friend@example.com"
+                                measurements:
+                                  type: array
+                                  description: >
+                                    Latest measurement(s) received from the sensor.
+                                    Present when `measurements=true`.
+                                  items:
+                                    $ref: '../components/schemas/SensorMeasurement.yaml'
+                                subscription:
+                                  allOf:
+                                    - $ref: '../components/schemas/Subscription.yaml'
+                                    - description: >
+                                        Active subscription details for this sensor.
+                                        Present when `measurements=true`.
+                                alerts:
+                                  type: array
+                                  description: >
+                                    Alert settings configured for this sensor.
+                                    Present when `alerts=true`.
+                                  items:
+                                    $ref: '../components/schemas/Alert.yaml'
+                                settings:
+                                  allOf:
+                                    - $ref: '../components/schemas/SettingObject.yaml'
+                                    - description: >
+                                        Sensor-specific settings as flattened key-value pairs.
+                                        Present when `settings=true`.
+          examples:
+            minimal:
+              summary: Default response (calibration data only)
+              value:
+                result: success
+                data:
+                  sensors:
+                    - sensor: "C6:F1:E7:D3:DA:11"
+                      owner: "otso@ruuvi.com"
+                      name: "Sauna"
+                      picture: ""
+                      public: false
+                      canShare: true
+                      offsetTemperature: 0
+                      offsetHumidity: 0
+                      offsetPressure: 0
+                      customProfile: false
+                      lastUpdated: 1732187742
+            with_all_fields:
+              summary: Response with measurements, alerts, sharedTo, and settings
+              value:
+                result: success
+                data:
+                  sensors:
+                    - owner: "otso@ruuvi.com"
+                      sensor: "C2:07:FC:16:45:3B"
+                      name: "Saarvahtra Office 453B"
+                      picture: "https://prod-sensor-profile-pictures.s3.eu-central-1.amazonaws.com/ed9a7169-65e4-4aac-853b-858d061a615e.jpg"
+                      public: false
+                      canShare: true
+                      offsetTemperature: 0
+                      offsetHumidity: 0
+                      offsetPressure: 0
+                      customProfile: false
+                      lastUpdated: 1697119564
+                      subscription:
+                        subscriptionName: "Business Standard"
+                        maxClaims: 50
+                        maxShares: 80
+                        maxSharesPerSensor: 10
+                        maxHistoryDays: 1096
+                        maxResolutionMinutes: 1
+                        emailAlertAllowed: true
+                        pushAlertAllowed: true
+                        telegramAlertAllowed: true
+                        delayedAlertAllowed: true
+                        pdfExportAllowed: true
+                        offlineAlertAllowed: true
+                        isActive: true
+                        startTime: 1748506803
+                        endTime: 1784889342
+                        endAt: "2026-07-24T10:35:42.000Z"
+                        lastUpdated: 1748506803
+                      measurements:
+                        - coordinates: "N/A"
+                          data: "0201061BFF9904050EA24339C9120024FFE003ECA076A44E37C207FC16453B"
+                          gwmac: "F9:15:8F:92:D8:69"
+                          timestamp: 1773923890
+                          rssi: -47
+                      alerts:
+                        - type: offline
+                          min: 0
+                          max: 900
+                          counter: 0
+                          delay: 0
+                          enabled: true
+                          description: ""
+                          triggered: false
+                          triggeredAt: "2026-02-06T07:29:08.000Z"
+                          lastUpdated: 1714289920
+                      sharedTo: []
+                      settings:
+                        Test: "Testiasetus"
+                        Test_lastUpdated: 1764760337
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized."
+                code: "ER_UNAUTHORIZED"
+
+    '403':
+      description: FORBIDDEN - Sensor exists but caller does not have access
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            forbidden:
+              value:
+                result: "error"
+                error: "Forbidden."
+                code: "ER_FORBIDDEN"
