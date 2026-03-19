@@ -1,0 +1,29 @@
+type: object
+required:
+  - gwmac
+  - coordinates
+  - rssi
+  - timestamp
+  - data
+properties:
+  gwmac:
+    type: string
+    description: MAC address of the gateway that received this measurement
+    example: "C6:F1:E7:D3:DA:11"
+  coordinates:
+    type: string
+    description: GPS coordinates of the gateway, or "N/A" if unavailable
+    example: "N/A"
+  rssi:
+    type: integer
+    description: Received Signal Strength Indicator in dBm
+    example: -65
+  timestamp:
+    type: integer
+    format: int64
+    description: Unix epoch timestamp in seconds when the measurement was recorded
+    example: 1732187742
+  data:
+    type: string
+    description: Hex-encoded raw sensor data payload
+    example: "0201060303AAFE1516AAFE10F7027275757669636F6D2F61626364"
