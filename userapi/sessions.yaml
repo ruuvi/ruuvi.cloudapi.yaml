@@ -1,0 +1,101 @@
+get:
+  summary: List current sessions
+  description: |
+    Returns the authenticated user's active sessions.
+
+    Sessions are ordered by most recent access first.
+  operationId: getSessions
+  tags:
+    - Sessions
+  security:
+    - bearerAuth: []
+
+  responses:
+    '200':
+      description: Active sessions retrieved successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - sessions
+                    properties:
+                      sessions:
+                        type: array
+                        items:
+                          $ref: '../components/schemas/Session.yaml'
+          examples:
+            success:
+              value:
+                result: success
+                data:
+                  sessions:
+                    - id: 984231
+                      createdAt: 1764412800
+                      lastAccessed: 1764448800
+                      current: true
+                    - id: 984115
+                      createdAt: 1764301200
+                      lastAccessed: 1764387600
+                      current: false
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"
+
+delete:
+  summary: Delete all current sessions
+  description: |
+    Deletes all active sessions for the authenticated user, including the session
+    used to authorize this request.
+  operationId: deleteSessions
+  tags:
+    - Sessions
+  security:
+    - bearerAuth: []
+
+  responses:
+    '200':
+      description: All active sessions deleted successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: false
+          examples:
+            success:
+              value:
+                result: success
+                data: {}
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized"
+                code: "ER_UNAUTHORIZED"

@@ -24,6 +24,8 @@ tags:
     description: User registration and verification
   - name: Sensor-Settings
     description: Sensor settings management
+  - name: Sessions
+    description: Authenticated session management
   - name: Push-Notifications
     description: Push notification token management
   - name: Sensors
@@ -47,6 +49,10 @@ paths:
     $ref: './sensor-settings.yaml'
   /sensors-dense:
     $ref: './sensors-dense.yaml'
+  /sessions:
+    $ref: './sessions.yaml'
+  /sessions/{id}:
+    $ref: './sessions-id.yaml'
   /share:
     $ref: './share.yaml'
   /subscription:
