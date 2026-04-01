@@ -41,7 +41,7 @@ get:
                       current: true
                     - id: 984115
                       createdAt: 1764301200
-                      lastAccessed: 1764387600
+                      lastAccessed: 1764387601
                       current: false
 
     '401':
