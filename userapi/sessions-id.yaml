@@ -46,7 +46,7 @@ delete:
             unauthorized:
               value:
                 result: "error"
-                error: "Unauthorized"
+                error: "UNAUTHORIZED"
                 code: "ER_UNAUTHORIZED"
 
     '404':
@@ -59,5 +59,5 @@ delete:
             not_found:
               value:
                 result: "error"
-                error: "Not Found"
+                error: "NOT FOUND"
                 code: "ER_NOT_FOUND"
