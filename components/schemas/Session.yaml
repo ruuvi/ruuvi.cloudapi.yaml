@@ -1,0 +1,29 @@
+type: object
+required:
+  - id
+  - createdAt
+  - lastAccessed
+  - current
+properties:
+  id:
+    type: integer
+    format: int64
+    description: Unique identifier of the active session.
+    example: 984231
+
+  createdAt:
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds when the session was created.
+    example: 1764412800
+
+  lastAccessed:
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds when the session was last used.
+    example: 1764448800
+
+  current:
+    type: boolean
+    description: Whether this session authorized the current request.
+    example: true
