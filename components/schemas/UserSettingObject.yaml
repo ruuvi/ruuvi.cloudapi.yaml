@@ -1,0 +1,19 @@
+type: object
+description: |
+  User settings as flattened key-value pairs.
+  - Setting values are stored with keys matching the setting name.
+  - Each setting has a corresponding `{settingName}_lastUpdated` field containing an epoch timestamp.
+  - Setting values are strings, timestamp fields are integers (epoch seconds).
+patternProperties:
+  '^(?!.*_lastUpdated$).+$':
+    type: string
+    maxLength: 65535
+    description: Setting value
+  '^.+_lastUpdated$':
+    type: integer
+    format: int64
+    description: Epoch timestamp in seconds for when the setting was last updated
+additionalProperties: false
+example:
+  description: 'Lorem Ipsum is simply dummy text'
+  description_lastUpdated: 1773306016
