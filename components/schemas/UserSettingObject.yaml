@@ -1,9 +1,11 @@
 type: object
 description: |
   User settings as flattened key-value pairs.
-  - Setting values are stored with keys matching the setting name.
+  - Setting values are returned with uppercase setting names.
   - Each setting has a corresponding `{settingName}_lastUpdated` field containing an epoch timestamp.
   - Setting values are strings, timestamp fields are integers (epoch seconds).
+propertyNames:
+  pattern: '^(?!.*_lastUpdated_lastUpdated$)(?!.*(?:^|_)[A-F0-9]{16,}(?:_|_lastUpdated$|$))(?!.*(?:^|_)\d{8,}(?:_|_lastUpdated$|$))[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+(?:_lastUpdated)?$'
 patternProperties:
   '^(?!.*_lastUpdated$).+$':
     type: string
@@ -15,5 +17,5 @@ patternProperties:
     description: Epoch timestamp in seconds for when the setting was last updated
 additionalProperties: false
 example:
-  description: 'Lorem Ipsum is simply dummy text'
-  description_lastUpdated: 1773306016
+  UNIT_TEMPERATURE: 'C'
+  UNIT_TEMPERATURE_lastUpdated: 1773306016

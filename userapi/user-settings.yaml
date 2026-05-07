@@ -19,9 +19,9 @@ post:
           properties:
             name:
               type: string
-              description: User setting name.
-              maxLength: 320
-              pattern: '^(?!.*_lastUpdated$)[a-zA-Z0-9_.-]+$'
+              description: User setting name in snake case, for example `UNIT_TEMPERATURE`, `profile_language_code`, or `settings_123`. Names are stored in uppercase.
+              maxLength: 80
+              pattern: '^(?!.*_[Ll][Aa][Ss][Tt][Uu][Pp][Dd][Aa][Tt][Ee][Dd]$)(?!.*(?:^|_)[A-Fa-f0-9]{16,}(?:_|$))(?!.*(?:^|_)\d{8,}(?:_|$))[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$'
             value:
               type: string
               description: User setting value.
@@ -33,7 +33,7 @@ post:
         examples:
           basic:
             value:
-              name: 'language'
+              name: 'PROFILE_LANGUAGE_CODE'
               value: 'en'
 
   responses:
@@ -134,10 +134,10 @@ get:
                 result: success
                 data:
                   settings:
-                    language: 'en'
-                    language_lastUpdated: 1732187742
-                    dashboardLayout: '{"cards":["temperature","humidity"]}'
-                    dashboardLayout_lastUpdated: 1732187742
+                    PROFILE_LANGUAGE_CODE: 'en'
+                    PROFILE_LANGUAGE_CODE_lastUpdated: 1732187742
+                    UNIT_TEMPERATURE: 'C'
+                    UNIT_TEMPERATURE_lastUpdated: 1732187742
 
     '401':
       description: UNAUTHORIZED - Auth token missing or invalid.
