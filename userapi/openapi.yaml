@@ -34,7 +34,8 @@ tags:
     description: Sensor sharing and unsharing
   - name: Subscription
     description: User subscription management
-
+  - name: User-Settings
+    description: User settings management
 
 paths:
   /air_firmwareupdate:
@@ -43,7 +44,7 @@ paths:
     $ref: './alerts.yaml'
   /push-register:
     $ref: './push-register.yaml'
-  /register: 
+  /register:
     $ref: './register.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
@@ -57,11 +58,12 @@ paths:
     $ref: './share.yaml'
   /subscription:
     $ref: './subscription.yaml'
+  /settings:
+    $ref: './user-settings.yaml'
   /unshare:
     $ref: './unshare.yaml'
-  /verify: 
+  /verify:
     $ref: './verify.yaml'
-  
 
 components:
   securitySchemes:
