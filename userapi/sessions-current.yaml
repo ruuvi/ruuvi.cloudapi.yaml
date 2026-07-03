@@ -1,0 +1,40 @@
+delete:
+  summary: Delete the current session
+  description: Deletes the session used to authorize this request.
+  operationId: deleteCurrentSession
+  tags:
+    - Sessions
+  security:
+    - bearerAuth: []
+
+  responses:
+    '200':
+      description: Current session deleted successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: false
+          examples:
+            success:
+              value:
+                result: success
+                data: {}
+
+    '401':
+      description: UNAUTHORIZED - Auth token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "UNAUTHORIZED"
+                code: "ER_UNAUTHORIZED"

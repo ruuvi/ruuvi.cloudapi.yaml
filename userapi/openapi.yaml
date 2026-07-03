@@ -52,6 +52,8 @@ paths:
     $ref: './sensors-dense.yaml'
   /sessions:
     $ref: './sessions.yaml'
+  /sessions/current:
+    $ref: './sessions-current.yaml'
   /sessions/{id}:
     $ref: './sessions-id.yaml'
   /share:
