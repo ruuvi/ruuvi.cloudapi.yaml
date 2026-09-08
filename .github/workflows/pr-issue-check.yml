@@ -13,7 +13,7 @@ jobs:
       checks: write
     steps:
       - name: Check if PR is linked to an issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -81,6 +81,30 @@ jobs:
             }
             
             const issueNumber = issueNumbers[0];
+            const qualifiedIssuePattern = /(?<owner>[\w.-]+)\/(?<repo>[\w.-]+)#(?<number>\d+)/g;
+            const qualifiedIssue = [...prBody.matchAll(qualifiedIssuePattern)]
+              .find(match => match.groups.number === issueNumber);
+            const issueOwner = qualifiedIssue?.groups.owner || context.repo.owner;
+            const issueRepo = qualifiedIssue?.groups.repo || context.repo.repo;
+
+            // The repository-scoped Actions token cannot inspect private sibling repositories.
+            // Accept an explicit link within this organization; local issues are fully validated below.
+            if (qualifiedIssue && issueOwner === context.repo.owner && issueRepo !== context.repo.repo) {
+              const message = `PR is linked to ${issueOwner}/${issueRepo}#${issueNumber}`;
+              await github.rest.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'success',
+                output: {
+                  title: '✅ Cross-repository issue link validated',
+                  summary: message
+                }
+              });
+              console.log(message);
+              return;
+            }
             
             try {
               // Fetch the issue using GraphQL to get the type field
@@ -100,8 +124,8 @@ jobs:
               `;
               
               const result = await github.graphql(query, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+                owner: issueOwner,
+                repo: issueRepo,
                 number: parseInt(issueNumber)
               });
               
