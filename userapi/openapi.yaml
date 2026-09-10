@@ -36,6 +36,8 @@ tags:
     description: User subscription management
   - name: User-Settings
     description: User settings management
+  - name: Marketing-Consent
+    description: Marketing email consent management
 
 paths:
   /air_firmwareupdate:
@@ -62,6 +64,8 @@ paths:
     $ref: './subscription.yaml'
   /settings:
     $ref: './user-settings.yaml'
+  /marketing-consent:
+    $ref: './marketing-consent.yaml'
   /unshare:
     $ref: './unshare.yaml'
   /verify:
