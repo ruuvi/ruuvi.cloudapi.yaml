@@ -3,6 +3,7 @@ post:
   description: >
     Requests a verification code to be emailed. 
     The verification code is then entered to /verify to get the access token.
+    The code is single-use and valid for 60 minutes.
     To protect against spam, this endpoint is rate limited.
   operationId: registerUser
   tags:

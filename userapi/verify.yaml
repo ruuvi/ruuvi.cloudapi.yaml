@@ -2,6 +2,9 @@ get:
   summary: Verify a user's email with a verification code to get an access token
   description: >
     Verify a user's email with a verification code to get an access token.
+    The code is single-use and valid for 60 minutes.
+    Access tokens remain valid while actively used and are
+    removed after approximately 180 days of inactivity, unless revoked earlier.
   operationId: verifyUser
   tags:
     - Register-User
