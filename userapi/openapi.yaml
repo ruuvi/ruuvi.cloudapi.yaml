@@ -44,6 +44,8 @@ paths:
     $ref: './air-firmware.yaml'
   /alerts:
     $ref: './alerts.yaml'
+  /get:
+    $ref: './get.yaml'
   /push-register:
     $ref: './push-register.yaml'
   /register:
