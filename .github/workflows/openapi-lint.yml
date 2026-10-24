@@ -11,12 +11,17 @@ on:
 
 jobs:
   spectral-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       # Check out the repository
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
 
       # Run Spectral
-      - uses: stoplightio/spectral-action@6416fd018ae38e60136775066eb3e98172143141
-        with:
-          file_glob: '**/openapi.yaml'
+      - name: Run Spectral
+        run: npx --yes @stoplight/spectral-cli@6.17.0 lint --ruleset .spectral.yml --fail-severity error --format github-actions '**/openapi.yaml'
