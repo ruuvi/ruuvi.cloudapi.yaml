@@ -1,0 +1,180 @@
+get:
+  summary: Get sensor measurements and history limits
+  description: |
+    Returns sensor metadata, measurements, and the effective history and
+    resolution limits used for the query.
+
+    Public sensors can be read without authentication. Private sensors require
+    authentication as the owner or a user the sensor is shared with. When an
+    Authorization header is supplied, it must be valid, even for public sensors.
+
+    History and resolution limits come from the sensor owner's subscription,
+    including for anonymous callers and authenticated callers with a different
+    subscription. Clients can request `limit=1` to fetch the latest measurement
+    and these limits before deciding whether to show history controls.
+    `maxHistoryDays=0` means history is unavailable. Positive values describe the
+    allowed lookback window, not the actual span of recorded measurements.
+    An empty measurements array does not change these limits.
+
+    Anonymous requests are rate limited to 5 per minute per sensor and source
+    IP, in addition to the shared anonymous limit of 60 per minute per source IP.
+  operationId: getSensorData
+  tags:
+    - Sensors
+  security:
+    - bearerAuth: []
+    - {}
+
+  parameters:
+    - name: sensor
+      in: query
+      required: true
+      description: MAC address of the sensor
+      schema:
+        type: string
+        pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+    - name: since
+      in: query
+      required: false
+      description: >
+        Start time as Unix epoch seconds. History queries are limited to the
+        owner's allowed history window. Defaults to the start of that window.
+        When only one measurement is fetched, the history window is ignored
+        so the latest measurement can be returned even if it is older.
+      schema:
+        type: integer
+        format: int64
+    - name: until
+      in: query
+      required: false
+      description: End time as Unix epoch seconds. Defaults to the current time.
+      schema:
+        type: integer
+        format: int64
+    - name: limit
+      in: query
+      required: false
+      description: >
+        Maximum number of measurements to return. Values above 144000 are
+        capped. When maxHistoryDays is zero, at most one measurement is returned
+        regardless of this parameter.
+      schema:
+        type: integer
+        minimum: 1
+        default: 15
+    - name: sort
+      in: query
+      required: false
+      description: Sort measurements by timestamp, newest first by default.
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+    - name: mode
+      in: query
+      required: false
+      description: >
+        Fetch mode for measurements. Dense returns recent high resolution data,
+        sparse returns downsampled data, and mixed combines both. Every mode is
+        subject to the owner's history and resolution limits.
+      schema:
+        type: string
+        enum: [dense, sparse, mixed]
+        default: mixed
+
+  responses:
+    '200':
+      description: Sensor measurements and history limits retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/SensorDataResponse.yaml'
+          examples:
+            public_with_history:
+              summary: Public sensor with 92 days of permitted history (limit=1)
+              value:
+                result: success
+                data:
+                  sensor: 'C6:F1:E7:D3:DA:11'
+                  name: 'Greenhouse'
+                  offsetTemperature: 0
+                  offsetHumidity: 0
+                  offsetPressure: 0
+                  picture: ''
+                  public: true
+                  maxHistoryDays: 92
+                  maxResolutionMinutes: 5
+                  measurements:
+                    - coordinates: 'N/A'
+                      data: '0201061BFF9904050EA24339C9120024FFE003ECA076A44E37C207FC16453B'
+                      gwmac: 'AA:BB:CC:DD:EE:FF'
+                      timestamp: 1773923890
+                      rssi: -47
+                  total: 1
+            public_without_history:
+              summary: Public sensor with no history access
+              value:
+                result: success
+                data:
+                  sensor: 'C6:F1:E7:D3:DA:11'
+                  name: 'Greenhouse'
+                  offsetTemperature: 0
+                  offsetHumidity: 0
+                  offsetPressure: 0
+                  picture: ''
+                  public: true
+                  maxHistoryDays: 0
+                  maxResolutionMinutes: 10
+                  measurements:
+                    - coordinates: 'N/A'
+                      data: '0201061BFF9904050EA24339C9120024FFE003ECA076A44E37C207FC16453B'
+                      gwmac: 'AA:BB:CC:DD:EE:FF'
+                      timestamp: 1773923890
+                      rssi: -47
+                  total: 1
+            public_without_measurements:
+              summary: History is permitted but no measurements match the query
+              value:
+                result: success
+                data:
+                  sensor: 'C6:F1:E7:D3:DA:11'
+                  name: 'Greenhouse'
+                  offsetTemperature: 0
+                  offsetHumidity: 0
+                  offsetPressure: 0
+                  picture: ''
+                  public: true
+                  maxHistoryDays: 92
+                  maxResolutionMinutes: 5
+                  measurements: []
+                  total: 0
+    '400':
+      description: Invalid sensor or query parameters
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '401':
+      description: Supplied authentication is invalid
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '403':
+      description: Sensor was not found or the caller does not have access
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '429':
+      description: Anonymous request rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
