@@ -1,0 +1,157 @@
+post:
+  summary: Request account deletion
+  description: |
+    Sends you an email with a link to delete your account. Nothing is deleted yet:
+    your account is deleted only when you open the link and confirm on the Ruuvi Station web page
+    (see `POST /verify-delete`).
+
+    The link is valid for 60 minutes. If you request a new email, links in earlier emails stop working.
+
+    The email is in the `language` you give, if supported (en, fi, sv, de, fr, pl).
+    Otherwise it uses the language of your Ruuvi profile, then the request's `Accept-Language` header, then English.
+  operationId: requestAccountDeletion
+  tags:
+    - Account-Deletion
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - email
+          properties:
+            email:
+              type: string
+              format: email
+              description: Your account's email address. It must match the signed-in account (case is ignored).
+            language:
+              type: string
+              description: Language of the email, e.g. `fi` or `fi-FI`. Optional.
+        examples:
+          basic:
+            value:
+              email: "user@example.com"
+              language: "fi"
+  responses:
+    '200':
+      description: The email was queued for sending
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        format: email
+          examples:
+            sent:
+              value:
+                result: "success"
+                data:
+                  email: "user@example.com"
+    '400':
+      description: Missing or malformed body, or an invalid email address
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid_body:
+              value:
+                result: "error"
+                error: "Missing or invalid request body."
+                code: "ER_INVALID_FORMAT"
+            invalid_email:
+              value:
+                result: "error"
+                error: "Invalid e-mail address."
+                code: "ER_INVALID_EMAIL_ADDRESS"
+    '401':
+      description: >
+        Not signed in, or `email` is not the signed-in account's email address.
+        A mismatching email is reported as 401 `ER_UNAUTHORIZED`, not 403, for compatibility
+        with existing apps. Check that you send the account's own email before asking the user
+        to sign in again.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized request."
+                code: "ER_UNAUTHORIZED"
+    '409':
+      description: >
+        Another deletion request or confirmation for your account is being processed right now.
+        Try again after the number of seconds in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Seconds to wait before trying again
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            conflict:
+              value:
+                result: "error"
+                error: "Another deletion request is being processed."
+                code: "ER_CONFLICT"
+    '429':
+      description: >
+        Too many requests: at most 3 deletion requests per account in 15 minutes (every request
+        with a valid email address counts, including ones answered with 401, 409 or 500).
+        Try again after the number of seconds in the `Retry-After` header. Without `Retry-After`,
+        the general request limit of your account was reached; try again in a minute.
+      headers:
+        Retry-After:
+          description: Seconds to wait before trying again. Missing for the general request limit.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            throttled:
+              value:
+                result: "error"
+                error: "Too many requests."
+                code: "ER_THROTTLED"
+            general_limit:
+              value:
+                result: "error"
+                error: "Too many requests"
+                code: "ER_THROTTLED"
+    '500':
+      description: >
+        `ER_UNABLE_TO_SEND_EMAIL`: the email could not be sent. No link was sent, and links in
+        earlier emails no longer work. `ER_INTERNAL`: the request could not be processed and
+        nothing changed. Try again later.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            email_failed:
+              value:
+                result: "error"
+                error: "Unable to send e-mail."
+                code: "ER_UNABLE_TO_SEND_EMAIL"
+            internal:
+              value:
+                result: "error"
+                error: "Unknown error occurred."
+                code: "ER_INTERNAL"

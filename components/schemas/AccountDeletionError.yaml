@@ -1,0 +1,17 @@
+description: >
+  Error of `POST /verify-delete` and `POST /verify-delete/status`: the standard error body,
+  plus `data.status`, which tells the web page what to show. `data` is missing only in a 429
+  from the general request limit (which also has no `Retry-After`) and in a 500.
+allOf:
+  - $ref: './Error.yaml'
+  - type: object
+    properties:
+      data:
+        type: object
+        required:
+          - status
+        properties:
+          status:
+            type: string
+            description: What went wrong, for showing a message to the user
+            enum: [invalid_request, invalid, expired, rate_limited, temporarily_failed]
