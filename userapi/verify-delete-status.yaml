@@ -1,0 +1,161 @@
+post:
+  summary: Get account deletion status
+  description: |
+    Shows whether a deletion link is still waiting for confirmation, and after confirmation,
+    how the cleanup is progressing. The Ruuvi Station web page calls this when it opens and
+    every 10 seconds after you confirm. The `token` comes from the link in the deletion email;
+    you don't need to be signed in. Nothing is changed by this call.
+
+    The token is sent in the request body, not in the URL, so it doesn't end up in API access logs
+    or proxies.
+
+    While a confirmation is being processed, this still returns `pending`. As soon as the account
+    is deleted, it returns `completed` with the cleanup progress. The progress stays available
+    after the link's 60 minutes, until 90 days after the cleanup has finished (`overall` is
+    `completed`); after that the link returns 404.
+
+    Stop checking when `overall` is `completed` or `needs_attention` (then contact Ruuvi support).
+  operationId: getAccountDeletionStatus
+  tags:
+    - Account-Deletion
+  security: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - token
+          properties:
+            token:
+              type: string
+              description: The `token` value from the link in the email (43 characters)
+        examples:
+          basic:
+            value:
+              token: "Abc123_-xyzXYZ0123456789abcdefghijklmnopqrs"
+  responses:
+    '200':
+      description: Waiting for confirmation, or deleted with cleanup progress
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    $ref: '../components/schemas/AccountDeletionStatus.yaml'
+          examples:
+            pending:
+              value:
+                result: "success"
+                data:
+                  status: "pending"
+            completed:
+              value:
+                result: "success"
+                data:
+                  status: "completed"
+                  account: "deleted"
+                  history: "completed"
+                  notifications: "completed"
+                  overall: "completed"
+    '400':
+      description: The token is missing or malformed
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/AccountDeletionError.yaml'
+          examples:
+            invalid_request:
+              value:
+                result: "error"
+                error: "Missing or malformed token."
+                code: "ER_INVALID_FORMAT"
+                data:
+                  status: "invalid_request"
+    '404':
+      description: >
+        The link is not valid: the token is unknown or was replaced by a newer deletion email,
+        an unconfirmed link expired more than 7 days ago, or the cleanup of a confirmed deletion
+        finished (`overall` became `completed`) more than 90 days ago.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/AccountDeletionError.yaml'
+          examples:
+            invalid:
+              value:
+                result: "error"
+                error: "Deletion link not found."
+                code: "ER_NOT_FOUND"
+                data:
+                  status: "invalid"
+    '410':
+      description: >
+        The link expired before it was confirmed. Request a new email from the app.
+        A confirmed link never returns this. 7 days after expiring, the link returns 404 instead.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/AccountDeletionError.yaml'
+          examples:
+            expired:
+              value:
+                result: "error"
+                error: "Deletion link expired."
+                code: "ER_TOKEN_EXPIRED"
+                data:
+                  status: "expired"
+    '429':
+      description: >
+        Too many requests from your IP address (at most 20 per minute for this and
+        `POST /verify-delete` together). Try again after the number of seconds in the
+        `Retry-After` header, or in a minute if it is missing.
+      headers:
+        Retry-After:
+          description: Seconds to wait before trying again
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/AccountDeletionError.yaml'
+          examples:
+            rate_limited:
+              value:
+                result: "error"
+                error: "Too many requests."
+                code: "ER_THROTTLED"
+                data:
+                  status: "rate_limited"
+    '500':
+      description: >
+        Unexpected server error. Try again later. Handle any other 5xx the same way.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/AccountDeletionError.yaml'
+          examples:
+            internal:
+              value:
+                result: "error"
+                error: "Unknown error occurred in Anonymous API"
+                code: "ER_INTERNAL"
+    '503':
+      description: >
+        Temporary failure (`data.status` is `temporarily_failed`). Try again later.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/AccountDeletionError.yaml'
+          examples:
+            temporarily_failed:
+              value:
+                result: "error"
+                error: "Temporary failure, try again later."
+                code: "ER_INTERNAL"
+                data:
+                  status: "temporarily_failed"

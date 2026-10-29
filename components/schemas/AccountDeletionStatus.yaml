@@ -1,0 +1,36 @@
+type: object
+description: |
+  Status of an account deletion request.
+
+  - `pending`: the link is valid and the deletion is waiting for confirmation.
+  - `completed`: the account is deleted (`account` is `deleted`). `history`, `notifications` and
+    `overall` show the cleanup that continues in the background, from minutes to a few days
+    depending on how much measurement history your sensors have. Each of them is `in_progress`,
+    `completed`, or `needs_attention` if the cleanup has stopped and Ruuvi support has been alerted.
+required:
+  - status
+properties:
+  status:
+    type: string
+    enum: [pending, completed]
+  account:
+    type: string
+    enum: [deleted]
+    description: Only when `completed`. Your account, sensor claims, shares and settings are deleted.
+  history:
+    type: string
+    enum: [in_progress, completed, needs_attention]
+    description: Only when `completed`. Deletion of your sensors' measurement history.
+  notifications:
+    type: string
+    enum: [in_progress, completed, needs_attention]
+    description: >
+      Only when `completed`. Emails telling the people you shared sensors with that their access
+      was removed, and telling the owners of sensors shared with you that you no longer have access.
+  overall:
+    type: string
+    enum: [in_progress, completed, needs_attention]
+    description: >
+      Only when `completed`. All cleanup together, including cleanup that has no field of its own
+      (such as sensor pictures), so it can be `in_progress` or `needs_attention` while `history`
+      and `notifications` are `completed`. `completed` means everything is done.

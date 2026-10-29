@@ -38,6 +38,18 @@ tags:
     description: User settings management
   - name: Marketing-Consent
     description: Marketing email consent management
+  - name: Account-Deletion
+    description: |
+      Deleting your Ruuvi account takes three steps:
+
+      1. Request deletion with `POST /request-delete`. You get an email with a link.
+      2. Open the link. The Ruuvi Station web page checks the link with `POST /verify-delete/status`,
+         shows what will be deleted and asks you to confirm, which calls `POST /verify-delete`.
+      3. The page shows the progress with `POST /verify-delete/status` until the cleanup is done.
+         This takes from minutes to a few days, depending on how much measurement history your
+         sensors have.
+
+      Nothing is deleted before you confirm. Deletion is permanent.
 
 paths:
   /air_firmwareupdate:
@@ -48,6 +60,8 @@ paths:
     $ref: './push-register.yaml'
   /register:
     $ref: './register.yaml'
+  /request-delete:
+    $ref: './request-delete.yaml'
   /sensor-settings:
     $ref: './sensor-settings.yaml'
   /sensors-dense:
@@ -70,6 +84,10 @@ paths:
     $ref: './unshare.yaml'
   /verify:
     $ref: './verify.yaml'
+  /verify-delete:
+    $ref: './verify-delete.yaml'
+  /verify-delete/status:
+    $ref: './verify-delete-status.yaml'
 
 components:
   securitySchemes:
