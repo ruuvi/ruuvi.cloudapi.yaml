@@ -28,7 +28,7 @@ properties:
 
   maxShares:
     type: integer
-    example: 80
+    example: 500
 
   maxSharesPerSensor:
     type: integer
