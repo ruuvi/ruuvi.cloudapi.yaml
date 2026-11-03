@@ -167,7 +167,7 @@ get:
           schema:
             $ref: '../components/schemas/Error.yaml'
     '429':
-      description: Anonymous request rate limit exceeded
+      description: Request rate limit exceeded
       content:
         application/json:
           schema:
