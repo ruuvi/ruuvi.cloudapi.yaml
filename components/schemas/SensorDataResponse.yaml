@@ -1,0 +1,77 @@
+allOf:
+  - $ref: './Success.yaml'
+  - type: object
+    properties:
+      data:
+        type: object
+        required:
+          - sensor
+          - name
+          - offsetTemperature
+          - offsetHumidity
+          - offsetPressure
+          - picture
+          - measurements
+          - total
+          - public
+          - maxHistoryDays
+          - maxResolutionMinutes
+        properties:
+          sensor:
+            type: string
+            description: MAC address of the sensor
+            pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$'
+            example: 'C6:F1:E7:D3:DA:11'
+          name:
+            type: string
+            example: 'Greenhouse'
+          offsetTemperature:
+            type: number
+            example: 0
+          offsetHumidity:
+            type: number
+            example: 0
+          offsetPressure:
+            type: number
+            example: 0
+          picture:
+            type: string
+            description: Sensor picture URL, or an empty string if no picture is set
+            example: ''
+          measurements:
+            type: array
+            items:
+              $ref: './SensorMeasurement.yaml'
+          total:
+            type: integer
+            minimum: 0
+            description: Number of measurements returned in this response
+            example: 1
+          public:
+            type: boolean
+            description: Whether the sensor is publicly readable
+            example: true
+          maxHistoryDays:
+            type: integer
+            minimum: 0
+            description: >
+              Maximum history window in days allowed by the sensor owner's
+              subscription, using the same validated limit as the measurement
+              query. Applies to anonymous and authenticated callers alike.
+              Zero means history is unavailable and at most one measurement
+              is returned. A positive value allows history controls up to this
+              window, but does not guarantee that measurements exist throughout
+              it. This is an access limit, not the age of the oldest stored
+              measurement. Returned even when measurements is empty or limit=1.
+            example: 92
+          maxResolutionMinutes:
+            type: integer
+            minimum: 1
+            description: >
+              Measurement resolution limit in minutes from the sensor owner's
+              subscription, using the same validated value as the measurement
+              query. One allows the highest available resolution. Data can be
+              sparser because of the selected mode, storage downsampling, or
+              missing measurements. Returned even when measurements is empty
+              or limit=1.
+            example: 5
