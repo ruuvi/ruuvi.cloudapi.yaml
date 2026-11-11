@@ -1,10 +1,16 @@
-get: 
+get:
   summary: Verify a user's email with a verification code to get an access token
-  description: >
-    Verify a user's email with a verification code to get an access token.
+  description: |
+    Verify a user's email with the verification code emailed by `POST /register` to get an access token.
     The code is single-use and valid for 60 minutes.
     Access tokens remain valid while actively used and are
     removed after approximately 180 days of inactivity, unless revoked earlier.
+
+    Send the `email` the code was requested for. The code is then accepted only for that email,
+    and wrong codes are limited per email. Requests without `email` are still accepted for now,
+    but `email` will become required.
+
+    When the code cannot be used, `code` is `ER_TOKEN_EXPIRED` and `sub_code` tells why (see 403).
   operationId: verifyUser
   tags:
     - Register-User
@@ -13,9 +19,22 @@ get:
     - name: token
       in: query
       required: true
+      description: >
+        The verification code from the email, currently 4 letters and digits.
+        Letter case does not matter.
       schema:
         type: string
       example: "BCDF"
+    - name: email
+      in: query
+      required: false
+      description: >
+        The email address the code was requested for. Letter case does not matter.
+        Recommended now; it will become required.
+      schema:
+        type: string
+        format: email
+      example: "example@ruuvi.com"
   responses:
     '200':
       description: Verification code successful
@@ -30,22 +49,40 @@ get:
                     $ref: '../components/schemas/verifyResult.yaml'
     '400':
       description: >
-        INVALID - Missing or malformed fields  
-        Code missing
+        `email` is malformed. Once `email` becomes required, this is also returned when it is missing.
       content:
         application/json:
           schema:
             $ref: '../components/schemas/Error.yaml'
           examples:
-            invalid:
+            invalid_email:
               value:
                 result: "error"
-                error: "Missing token"
-                code: "ER_INVALID"
-                sub_code: "ER_INVALID_ARGUMENT"
-    '403':
+                error: "Missing or invalid e-mail address."
+                code: "ER_INVALID_EMAIL_ADDRESS"
+    '401':
       description: >
-        Forbidden - Verification code invalid or expired
+        `token` is missing or empty, or the server could not verify the code
+        (for example after a server key change). Request a new code.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unauthorized:
+              value:
+                result: "error"
+                error: "Unauthorized request."
+                code: "ER_UNAUTHORIZED"
+    '403':
+      description: |
+        The code cannot be used. `code` is always `ER_TOKEN_EXPIRED`; `sub_code` tells why:
+
+        - `ER_SUB_INVALID_CODE`: the code is wrong or malformed, or it was requested for a different
+          email than `email`. Check the code and try again. With `email`, this counts towards the
+          wrong-code limit (see 429).
+        - `ER_SUB_CODE_USED`: the code has already been used. Request a new code.
+        - `ER_SUB_CODE_EXPIRED`: the code has expired. Request a new code.
       content:
         application/json:
           schema:
@@ -54,26 +91,66 @@ get:
             invalid_code:
               value:
                 result: "error"
-                error: "Code used or expired"
-                code: "ER_FORBIDDEN"
-                sub_code: "ER_TOKEN_EXPIRED"
-
+                error: "That code is incorrect. Check the code in your email and try again."
+                code: "ER_TOKEN_EXPIRED"
+                sub_code: "ER_SUB_INVALID_CODE"
+            used_code:
+              value:
+                result: "error"
+                error: "This code has already been used. Request a new code to sign in."
+                code: "ER_TOKEN_EXPIRED"
+                sub_code: "ER_SUB_CODE_USED"
+            expired_code:
+              value:
+                result: "error"
+                error: "This code has expired. Request a new code to sign in."
+                code: "ER_TOKEN_EXPIRED"
+                sub_code: "ER_SUB_CODE_EXPIRED"
     '429':
-      description: >
-        Too many requests - Rate limit exceeded
-        Rate limits apply per IP address and total. 
-        Try again later.
+      description: |
+        Too many attempts. `code` is `ER_THROTTLED`.
+
+        - Without `sub_code`: more than 30 attempts from your IP address within 15 minutes.
+          Try again in a few minutes.
+        - `ER_SUB_TOO_MANY_ATTEMPTS`: 5 wrong codes for `email`. All codes for that email,
+          including the right one, are refused until 15 minutes after the last wrong code.
       content:
         application/json:
           schema:
             $ref: '../components/schemas/Error.yaml'
           examples:
-            conflict:
+            too_many_attempts:
               value:
                 result: "error"
-                error: "Too many requests"
+                error: "Too many attempts. Please wait a few minutes and try again."
                 code: "ER_THROTTLED"
-                
+            too_many_wrong_codes:
+              value:
+                result: "error"
+                error: "Too many incorrect codes. Please wait 15 minutes and try again."
+                code: "ER_THROTTLED"
+                sub_code: "ER_SUB_TOO_MANY_ATTEMPTS"
+    '500':
+      description: >
+        Unexpected server error. Try again; if the code is then reported as already used
+        (`ER_SUB_CODE_USED`), request a new code.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            internal:
+              value:
+                result: "error"
+                error: "Very Unknown error occurred."
+                code: "ER_INTERNAL"
+            no_user:
+              value:
+                result: "error"
+                error: "Unable to register user."
+                code: "ER_INTERNAL"
+                sub_code: "ER_SUB_NO_USER"
+
 # post: 
 #   summary: Verify a user's email with a verification code to get an access token
 #   description: >
