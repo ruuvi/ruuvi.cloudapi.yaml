@@ -35,6 +35,8 @@ post:
             secret:
               type: string
               minLength: 1
+              maxLength: 32
+              pattern: '^[\u0000-\uD7FF\uE000-\uFFFF]+$'
               description: >
                 The secret printed on the sensor. A first secret must fit 32 characters and
                 cannot contain supplementary Unicode characters or unpaired surrogates.
