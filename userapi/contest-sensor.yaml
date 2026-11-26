@@ -1,0 +1,146 @@
+post:
+  summary: Force-claim a sensor using its secret
+  description: |
+    Claims a sensor for your account using its printed secret, replacing its current owner's
+    claim if necessary. The previous claim's alerts, settings, profiles and shares are removed.
+    When replacing another owner's claim, readings before the transfer cutoff are hidden from
+    the new owner as soon as the transfer commits, for both reduced and dense history.
+    Deletion of the previous claim's reduced measurement history is scheduled in the background;
+    dense history expires according to its normal retention. HTTP 200 does not wait for cleanup.
+    An accepted request for a sensor you already own preserves its existing history and shares.
+
+    Send a `requestId` to protect against retries taking ownership back after a later claim.
+    Reuse the same ID and request body for every retry of this action. A retained, already-applied
+    request returns HTTP 200 without changing current ownership, even if someone else now owns
+    the sensor. The replay is recognized before checking your current claim limit.
+  operationId: contestSensor
+  tags:
+    - Sensor-Ownership
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - sensor
+            - secret
+          properties:
+            sensor:
+              type: string
+              pattern: '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$'
+              description: >
+                Sensor MAC address, for example `C6:F1:E7:D3:DA:11`. Preserve the original
+                spelling on retries; colon and hyphen separators are distinct sensor IDs.
+            secret:
+              type: string
+              minLength: 1
+              description: >
+                The secret printed on the sensor. Only when storing a first secret, the value must
+                be at most 32 characters and cannot contain supplementary Unicode characters or
+                unpaired surrogates; otherwise the server returns ER_INVALID_FORMAT. For an
+                existing secret, the candidate is compared exactly without applying those first-secret
+                restrictions; a mismatch returns ER_FORBIDDEN. For a new request, the claim limit
+                is checked before either secret check. A retained replay skips both checks.
+            name:
+              type: string
+              maxLength: 64
+              description: Optional name for a newly created claim, up to 64 characters.
+            description:
+              type: string
+              description: Optional description for a newly created claim.
+            requestId:
+              $ref: '../components/schemas/SensorActionRequestId.yaml'
+        examples:
+          claim_with_retry_protection:
+            value:
+              sensor: 'C6:F1:E7:D3:DA:11'
+              secret: 'example-printed-secret'
+              name: 'Living room'
+              description: 'Sensor by the window'
+              requestId: '6cdbf94a-57a5-4e85-a0c4-c89e3aab1d2f'
+  responses:
+    '200':
+      description: >
+        Sensor claimed, an accepted request found it already owned by you, or this requestId
+        was already applied and is still retained. A replay changes nothing; data.sensor
+        identifies the requested sensor and does not confirm that you still own it.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components/schemas/Success.yaml'
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - sensor
+                    properties:
+                      sensor:
+                        type: string
+          examples:
+            applied_or_replayed:
+              value:
+                result: success
+                data:
+                  sensor: 'C6:F1:E7:D3:DA:11'
+    '400':
+      description: >
+        Missing or invalid sensor/secret (ER_MISSING_ARGUMENT), malformed body, invalid requestId
+        or invalid first secret (ER_INVALID_FORMAT), or the subscription claim limit has been
+        reached (ER_CLAIM_COUNT_REACHED). For a new request, capacity is checked before the secret.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid_request_id:
+              value:
+                result: error
+                error: 'Invalid requestId.'
+                code: ER_INVALID_FORMAT
+            claim_limit:
+              value:
+                result: error
+                error: 'Maximum claims for subscription reached.'
+                code: ER_CLAIM_COUNT_REACHED
+            invalid_first_secret:
+              value:
+                result: error
+                error: 'Invalid sensor secret.'
+                code: ER_INVALID_FORMAT
+    '401':
+      description: Authentication is missing or invalid (ER_UNAUTHORIZED).
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '403':
+      description: The secret does not match the sensor's existing secret (ER_FORBIDDEN).
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            wrong_secret:
+              value:
+                result: error
+                error: 'Given secret does not match tag'
+                code: ER_FORBIDDEN
+    '429':
+      description: Request rate limit exceeded (ER_THROTTLED). Retry later with the same requestId.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '500':
+      description: >
+        Internal failure (ER_INTERNAL). A storage failure may include
+        sub_code ER_SUB_DATA_STORAGE_ERROR. Keep the same requestId when retrying.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'

@@ -1,0 +1,131 @@
+post:
+  summary: Unclaim a sensor or remove a received share
+  description: |
+    Removes your claim of a sensor, including its alerts, settings, profiles and shares.
+    If the sensor belongs to someone else and is shared with you, removes your received share
+    instead. `deleteData` applies only when removing your own claim.
+
+    With `deleteData: true`, deletion of measurement history older than the removal cutoff is
+    scheduled in the background. HTTP 200 confirms that the action was applied; it does not
+    wait for history deletion to finish. Without `deleteData`, history is retained.
+    Legacy non-MAC sensor IDs can still be unclaimed successfully, but their history cannot
+    be deleted automatically: `deleteData: true` records cleanup that requires support intervention.
+
+    Send a `requestId` to protect against retries removing a later claim. Reuse the same ID and
+    request body for every retry of this action. A retained, already-applied request returns
+    the same success response without changing the sensor's current claim or share.
+  operationId: unclaimSensor
+  tags:
+    - Sensor-Ownership
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - sensor
+          properties:
+            sensor:
+              type: string
+              minLength: 1
+              description: >
+                Sensor ID as returned by the API, normally a MAC address such as
+                `C6:F1:E7:D3:DA:11`. Legacy non-MAC sensor IDs are also accepted.
+                Preserve the exact spelling on retries, including separators.
+            deleteData:
+              type: boolean
+              default: false
+              description: >
+                Schedule deletion of the removed claim's measurement history from both history tables.
+                To retain history, omit this field or send the JSON boolean false. Do not send the
+                string "false": the server treats it as true and can schedule history deletion.
+            requestId:
+              $ref: '../components/schemas/SensorActionRequestId.yaml'
+        examples:
+          remove_and_delete_history:
+            summary: Remove an owned sensor and schedule history deletion
+            value:
+              sensor: 'C6:F1:E7:D3:DA:11'
+              deleteData: true
+              requestId: '6cdbf94a-57a5-4e85-a0c4-c89e3aab1d2f'
+          remove_received_share:
+            summary: Remove a sensor shared with you
+            value:
+              sensor: 'C6:F1:E7:D3:DA:11'
+              requestId: '751a9e47-ad94-4ec8-a885-24164e03683e'
+  responses:
+    '200':
+      description: >
+        Claim or received share removed, or this requestId was already applied and is still
+        retained. A replay changes nothing and does not assert current ownership. The response
+        contains only result; there is no data object.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - result
+            properties:
+              result:
+                type: string
+                enum: [success]
+          examples:
+            applied_or_replayed:
+              value:
+                result: success
+    '400':
+      description: >
+        Missing or invalid sensor (ER_MISSING_ARGUMENT), invalid requestId (ER_INVALID_FORMAT),
+        or the sensor belongs to someone else and is not shared with you (ER_FORBIDDEN).
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            invalid_request_id:
+              value:
+                result: error
+                error: 'Invalid requestId.'
+                code: ER_INVALID_FORMAT
+            no_received_share:
+              value:
+                result: error
+                error: 'No access to sensor or sensor not shared.'
+                code: ER_FORBIDDEN
+    '401':
+      description: Authentication is missing or invalid (ER_UNAUTHORIZED).
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '403':
+      description: >
+        The sensor is unclaimed (ER_FORBIDDEN), unless this is a retained replay of an applied
+        request. Repeating an unclaim without requestId can return this response.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+          examples:
+            unowned:
+              value:
+                result: error
+                error: 'Sensor does not belong to user.'
+                code: ER_FORBIDDEN
+    '429':
+      description: Request rate limit exceeded (ER_THROTTLED). Retry later with the same requestId.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'
+    '500':
+      description: >
+        Internal failure (ER_INTERNAL). A storage failure may include
+        sub_code ER_SUB_DATA_STORAGE_ERROR. Keep the same requestId when retrying.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Error.yaml'

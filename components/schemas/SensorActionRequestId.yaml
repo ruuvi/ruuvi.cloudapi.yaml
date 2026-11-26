@@ -1,0 +1,25 @@
+type: ['string', 'null']
+format: uuid
+pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+description: |
+  Optional UUID identifying one unclaim or force-claim action. Generate it once when the user
+  starts the action, then reuse it with the same request body after a timeout, lost response or
+  other retry. Keep it with any persisted pending request. A new user action needs a new UUID;
+  do not reuse an old UUID to change `deleteData`, the secret or other request fields.
+
+  The ID is scoped to the authenticated user, endpoint and sensor. UUID case is ignored. Sensor
+  identity ignores case, accents and trailing spaces, but `:` and `-` remain distinct. Preserve
+  the original sensor spelling on every retry.
+
+  While the applied request's record is retained, a retry returns HTTP 200 without applying the
+  action again, even if the sensor has since been claimed by someone else or claimed again by
+  the same user. This acknowledges the earlier action; it does not confirm current ownership.
+
+  Replay protection is not permanent. Completed records become eligible for removal after the
+  configured retention period, which defaults to 90 days after completion. Unfinished cleanup
+  can retain them longer. After removal, the same UUID can be treated as a new request.
+
+  Omitting this field or sending null keeps the behavior without request-ID protection: a
+  delayed retry can act on a newer claim. Any other value that is not a UUID returns HTTP 400
+  with `ER_INVALID_FORMAT`.
+example: '6cdbf94a-57a5-4e85-a0c4-c89e3aab1d2f'
