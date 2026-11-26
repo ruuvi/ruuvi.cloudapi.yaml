@@ -38,7 +38,10 @@ post:
             deleteData:
               type: boolean
               default: false
-              description: Schedule deletion of the removed claim's measurement history from both history tables.
+              description: >
+                Schedule deletion of the removed claim's measurement history from both history tables.
+                To retain history, omit this field or send the JSON boolean false. Do not send the
+                string "false": the server treats it as true and can schedule history deletion.
             requestId:
               $ref: '../components/schemas/SensorActionRequestId.yaml'
         examples:

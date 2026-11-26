@@ -3,6 +3,8 @@ post:
   description: |
     Claims a sensor for your account using its printed secret, replacing its current owner's
     claim if necessary. The previous claim's alerts, settings, profiles and shares are removed.
+    When replacing another owner's claim, readings before the transfer cutoff are hidden from
+    the new owner as soon as the transfer commits, for both reduced and dense history.
     Deletion of the previous claim's reduced measurement history is scheduled in the background;
     dense history expires according to its normal retention. HTTP 200 does not wait for cleanup.
     An accepted request for a sensor you already own preserves its existing history and shares.
@@ -35,15 +37,17 @@ post:
             secret:
               type: string
               minLength: 1
-              maxLength: 32
-              pattern: '^[\u0000-\uD7FF\uE000-\uFFFF]+$'
               description: >
-                The secret printed on the sensor. A first secret must fit 32 characters and
-                cannot contain supplementary Unicode characters or unpaired surrogates.
-                A candidate for an existing secret must match it exactly.
+                The secret printed on the sensor. Only when storing a first secret, the value must
+                be at most 32 characters and cannot contain supplementary Unicode characters or
+                unpaired surrogates; otherwise the server returns ER_INVALID_FORMAT. For an
+                existing secret, the candidate is compared exactly without applying those first-secret
+                restrictions; a mismatch returns ER_FORBIDDEN. For a new request, the claim limit
+                is checked before either secret check. A retained replay skips both checks.
             name:
               type: string
-              description: Optional name for a newly created claim.
+              maxLength: 64
+              description: Optional name for a newly created claim, up to 64 characters.
             description:
               type: string
               description: Optional description for a newly created claim.
